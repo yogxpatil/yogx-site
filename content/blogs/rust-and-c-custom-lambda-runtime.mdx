@@ -1,0 +1,212 @@
+---
+title: "Rust and C Walk into a Lambda: Custom Runtimes for the Performance‑Hungry DevOps Engineer"
+description: "How and why to build AWS Lambda custom runtimes using Rust and C for extreme performance, control, and predictability."
+date: "2025-01-08"
+readingTime: "8"
+tags: ["AWS Lambda", "Rust", "C", "Custom Runtime", "DevOps", "Performance"]
+---
+
+## Why This Blog Exists
+
+At some point in a DevOps journey, you realize something uncomfortable:
+
+> **Managed runtimes are convenient — but not always optimal.**
+
+Cold starts, memory overhead, opaque execution models — they’re fine until they aren’t.  
+This blog documents my exploration into **AWS Lambda custom runtimes**, specifically using **Rust and C**, when performance actually matters.
+
+This is not theory. This is a *why + how* from a DevOps perspective.
+
+---
+
+## What Is a Custom Runtime in AWS Lambda?
+
+AWS Lambda normally runs your code inside managed runtimes like:
+- Node.js
+- Python
+- Java
+- Go
+
+But Lambda also supports **Custom Runtimes**, which means:
+- You control the executable
+- You control startup behavior
+- You control memory and performance characteristics
+
+In short:
+
+> **AWS manages the infrastructure. You manage the runtime.**
+
+---
+
+## Why Rust and C?
+
+### Rust
+- Near‑C performance
+- Memory safety guarantees
+- Excellent tooling
+- Predictable binaries
+
+### C
+- Absolute control
+- Minimal overhead
+- Extremely fast cold starts
+- No runtime baggage
+
+If you care about **cold start latency**, **binary size**, or **deterministic behavior**, these languages shine.
+
+---
+
+## How Lambda Custom Runtimes Work (Conceptually)
+
+Lambda custom runtimes rely on:
+- A **bootstrap executable**
+- The **Lambda Runtime API**
+- A loop that:
+  1. Fetches the next invocation
+  2. Executes your logic
+  3. Sends the response back
+
+Your executable *is* the runtime.
+
+---
+
+## Runtime Directory Structure
+
+```bash
+.
+├── bootstrap
+```
+
+That’s it.
+
+The `bootstrap` file must:
+- Be executable
+- Live at the root of the deployment package
+- Handle the Runtime API loop
+
+---
+
+## Writing a Runtime in Rust
+
+### Minimal Rust Runtime Skeleton
+
+```rust
+use std::env;
+use std::process::Command;
+
+fn main() {
+    let api = env::var("AWS_LAMBDA_RUNTIME_API").unwrap();
+    loop {
+        // Fetch event
+        // Execute handler logic
+        // Send response back
+    }
+}
+```
+
+In practice, you’ll:
+- Use `reqwest` or `hyper`
+- Deserialize JSON input
+- Serialize JSON output
+
+Rust gives you safety without sacrificing speed.
+
+---
+
+## Writing a Runtime in C
+
+### Why C Still Matters
+
+C produces:
+- Tiny binaries
+- Zero abstractions
+- Maximum predictability
+
+### Minimal Concept (Pseudo‑C)
+
+```c
+while (1) {
+  // HTTP GET /runtime/invocation/next
+  // Execute handler
+  // HTTP POST /runtime/invocation/{id}/response
+}
+```
+
+This is as close as you get to the metal in Lambda.
+
+---
+
+## Building and Packaging
+
+### Compile (Rust Example)
+
+```bash
+cargo build --release
+```
+
+### Prepare Deployment
+
+```bash
+cp target/release/bootstrap .
+zip function.zip bootstrap
+```
+
+### Deploy
+
+```bash
+aws lambda create-function   --function-name custom-runtime-demo   --runtime provided.al2   --handler bootstrap   --zip-file fileb://function.zip   --role arn:aws:iam::123456789012:role/lambda-role
+```
+
+---
+
+## Performance Observations
+
+From real tests:
+
+- Cold starts reduced significantly
+- Memory usage dramatically lower
+- Faster execution for CPU‑heavy workloads
+
+This is not magic — it’s just fewer layers.
+
+---
+
+## When Should You Use Custom Runtimes?
+
+✅ Use when:
+- Cold starts hurt business logic
+- You need full runtime control
+- Binary size matters
+- Determinism is critical
+
+❌ Avoid when:
+- Team isn’t comfortable with low‑level debugging
+- Rapid iteration matters more than raw performance
+- Managed runtimes already meet requirements
+
+---
+
+## DevOps Perspective (The Real Takeaway)
+
+Custom runtimes change how you think about Lambda:
+
+- Lambda becomes **execution infrastructure**
+- Your code becomes the platform
+- Performance is no longer a black box
+
+This is where DevOps meets systems engineering.
+
+---
+
+## Final Thoughts
+
+Rust and C aren’t overkill for Lambda — they’re **precision tools**.
+
+If your workload demands:
+- speed
+- control
+- predictability
+
+Then custom runtimes are not an optimization — they’re a strategy.
+
+Happy hacking 🚀

@@ -1,0 +1,227 @@
+---
+title: "Mastering Terraform: Create Custom Providers and Take Control"
+description: "A practical walkthrough on building a custom Terraform provider from scratch and understanding how Terraform really works under the hood."
+date: "2025-01-05"
+readingTime: "9"
+tags: ["Terraform", "Custom Providers", "IaC", "DevOps"]
+---
+
+(Because Terraform isn’t just a tool — it’s a challenge waiting to be conquered.)
+
+## Why I Wrote This Blog
+
+At some point while working with Terraform modules, a question hit me:
+
+> *What if I could create my own Terraform resource?*
+
+That curiosity pulled me into the world of **custom providers** — a place that is powerful, slightly under‑documented, and incredibly rewarding once things click.
+
+This blog is not just a tutorial. It’s a practical, experience‑driven walkthrough of how I explored Terraform internals and built my **first custom provider**.
+
+---
+
+## Why a To‑Do App?
+
+Every new technology deserves a simple but meaningful hands‑on project.  
+For frontend devs it’s a counter, for backend devs it’s CRUD — and for Terraform?
+
+A **to‑do list**.
+
+Why?
+- Simple state management
+- Full CRUD lifecycle
+- Easy to reason about
+- Perfect for learning provider internals
+
+We’ll manage to‑do items as Terraform resources backed by a local JSON file.
+
+---
+
+## Prerequisites
+
+Before we begin, make sure you have:
+
+- Terraform installed
+- Go (>= 1.21)
+- Basic knowledge of Terraform & Go
+- A text editor (VS Code recommended)
+
+> Tip: Use `tfenv` to manage Terraform versions.
+
+---
+
+## Project Structure
+
+```bash
+terraform-provider-todo/
+├── main.go
+├── go.mod
+└── internal/
+    └── provider/
+        ├── provider.go
+        └── resource_todo.go
+```
+
+---
+
+## main.go — Entry Point
+
+This file tells Terraform how to start your provider.
+
+```go
+package main
+
+import (
+  "github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+  "terraform-provider-todo/internal/provider"
+)
+
+func main() {
+  plugin.Serve(&plugin.ServeOpts{
+    ProviderFunc: provider.Provider,
+  })
+}
+```
+
+---
+
+## Provider Definition
+
+The provider defines configuration and exposes resources.
+
+```go
+package provider
+
+import (
+  "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+type providerConfig struct {
+  StoragePath string
+}
+
+func Provider() *schema.Provider {
+  return &schema.Provider{
+    Schema: map[string]*schema.Schema{
+      "storage_path": {
+        Type:     schema.TypeString,
+        Required: true,
+      },
+    },
+    ResourcesMap: map[string]*schema.Resource{
+      "yogesh_todo_item": resourceTodoItem(),
+    },
+    ConfigureFunc: providerConfigure,
+  }
+}
+
+func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+  return &providerConfig{
+    StoragePath: d.Get("storage_path").(string),
+  }, nil
+}
+```
+
+---
+
+## Defining the Todo Resource
+
+Each todo item is stored in a JSON file.
+
+```go
+type TodoItem struct {
+  ID        string    `json:"id"`
+  Title     string    `json:"title"`
+  Completed bool      `json:"completed"`
+  CreatedAt time.Time `json:"created_at"`
+}
+```
+
+Your resource implements:
+- Create
+- Read
+- Update
+- Delete
+
+This maps cleanly to Terraform’s lifecycle.
+
+---
+
+## Building the Provider
+
+```bash
+go mod tidy
+go build -o terraform-provider-todo
+```
+
+Install locally:
+
+```bash
+mkdir -p ~/.terraform.d/plugins/local.providers/local/todo/1.0.0/linux_amd64
+cp terraform-provider-todo ~/.terraform.d/plugins/local.providers/local/todo/1.0.0/linux_amd64/
+```
+
+---
+
+## Using the Provider
+
+```hcl
+terraform {
+  required_providers {
+    todo = {
+      source  = "local.providers/local/todo"
+      version = "1.0.0"
+    }
+  }
+}
+
+provider "todo" {
+  storage_path = "todos.json"
+}
+
+resource "todo_item" "learn_tf" {
+  title = "Build a custom Terraform provider"
+}
+```
+
+Run:
+
+```bash
+terraform init
+terraform apply
+```
+
+🎉 Your todo is now managed by Terraform.
+
+---
+
+## What Did We Learn?
+
+- Terraform is extensible
+- Providers are just Go binaries
+- Resources map cleanly to CRUD
+- State handling is critical
+
+---
+
+## Common Pitfalls
+
+- External modification of state files
+- Missing locks
+- Poor error handling
+- No tests
+
+---
+
+## Final Thoughts
+
+Building a custom provider completely changes how you see Terraform.
+
+You stop treating it like a black box and start understanding:
+- why state behaves the way it does
+- how providers really work
+- how powerful Terraform can be beyond cloud resources
+
+If curiosity drives you — **custom providers are worth mastering**.
+
+Happy terraforming 🚀

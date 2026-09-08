@@ -1,0 +1,133 @@
+---
+title: "Heartbeat Portal — Unified ECS Observability"
+description: "A platform-first observability portal that provides zero-click visibility into ECS workloads across environments."
+year: "2025"
+preview: true,
+previewType: "live"
+previewUrl: "http://localhost:3001"
+tags:
+  - devops
+  - aws
+  - ecs
+  - observability
+  - sre
+  - platform-engineering
+stats: "Zero‑click ECS visibility at scale"
+cover: "/heartbeat-yo.png"
+repository: "https://github.com/yogeshp-code/HeartBeat"
+islive: true
+link: "https://heartbeat.yogx.xyz/"
+github: "https://github.com/yogeshp-code/heartbeat"
+performance: "80"
+stability: "90%"
+optimization: "A"
+testimonials:
+  - text: "It saved hours of manual effort by removing the need to monitor each AWS service separately through the console."
+    author: "Jay Patel | Devops Engineer @ Wonderlendhubs PVT LTD"
+license: "MIT"
+---
+
+## Overview
+
+**Heartbeat Portal** is a lightweight observability platform built to solve a real operational gap encountered at scale:
+having monitoring data available, but lacking **instant, cross‑environment visibility**.
+
+As ECS-based platforms grew across multiple sandbox and production environments, simple operational questions became costly to answer.  
+Heartbeat reduces this complexity to a **single, glanceable system view** — enabling faster decisions, earlier detection of drift, and lower cognitive load for engineers.
+
+This project began as a skunkworks initiative and later received leadership endorsement and approval to be open-sourced.
+
+---
+
+## Problem Statement
+
+In a growing ECS ecosystem, teams faced recurring issues:
+
+- Engineers had to manually open **multiple ECS clusters** to assess health
+- **Over‑provisioned services** often went unnoticed after deployments or migrations
+- Observability tools existed, but required **constant filtering and context switching**
+- On‑call diagnosis slowed down due to **fragmented visibility**
+
+> The challenge was not missing metrics — it was missing **clarity**.
+
+---
+
+## Why Heartbeat Was Needed
+
+As deployments scaled across clients and environments:
+
+- Small inefficiencies multiplied into operational friction
+- Cost leaks became harder to spot early
+- Platform health depended increasingly on tribal knowledge
+
+Heartbeat was designed to act as a **visibility layer above ECS**, answering one question instantly:
+
+> **“Is everything running the way it should — right now?”**
+
+---
+
+## Solution
+
+Heartbeat Portal provides:
+
+- Real‑time visibility into **running task counts per service**
+- A unified view across **all clusters and environments**
+- Immediate detection of **scaling anomalies and configuration drift**
+- A fast UI optimized for **operational awareness**, not exploration
+
+It intentionally complements existing observability tools rather than replacing them.
+
+---
+
+## Design Principles
+
+Heartbeat follows a strict platform philosophy:
+
+- **Zero‑click awareness** — no dashboards to configure, no filters to apply
+- **Low AWS cost** — relies on ECS APIs instead of metrics ingestion
+- **Minimal cognitive load** — one screen, one purpose
+- **Signal over noise** — highlight only actionable states
+- **Extensible foundation** — designed to grow beyond ECS
+
+This aligns closely with *lazy engineering*: automate visibility so humans can focus on decisions.
+
+---
+
+## Architecture
+
+- **Frontend**: Next.js + React (fast, glanceable UI)
+- **Backend**: FastAPI (read‑only ECS data aggregation)
+- **Deployment**: Containerized, Docker‑ready
+- **Cloud APIs**: AWS ECS
+
+The architecture prioritizes simplicity, safety, and ease of extension.
+
+---
+
+## Key Capabilities
+
+- Unified ECS service visibility across environments
+- Early detection of over‑scaling and misconfigurations
+- Zero‑configuration onboarding
+- Designed for daily on‑call and platform usage
+
+---
+
+## Recognition
+
+Heartbeat originated as a skunkworks project driven by a “what‑if” exploration of ECS observability.
+
+After internal demos, the project received strong leadership feedback for its simplicity and effectiveness, and was approved to be **open‑sourced for the AWS community**.
+
+---
+
+## Future Roadmap
+
+Heartbeat is built as a **platform foundation**, not a one‑off dashboard.
+
+Planned expansions include:
+- AWS Lambda
+- Auto Scaling Groups (ASG)
+- RDS and supporting infrastructure
+
+The long‑term vision is a **unified workload health layer** focused on clarity, speed, and confidence.

@@ -1,0 +1,111 @@
+---
+title: "MyVCS: Building a Version Control System from Scratch"
+description: "A deep dive into designing and building a custom version control system to understand how Git-like systems really work."
+date: "2024-11-20"
+readingTime: "7"
+tags: ["Systems", "Version Control", "DevOps", "Engineering"]
+---
+
+## Why Build a VCS?
+
+At some point, using Git every day creates a blind spot.
+
+You know the commands —
+but not the machinery underneath.
+
+MyVCS exists to answer one question:
+
+> **How does version control actually work?**
+
+---
+
+## Core Goals
+
+- Understand object storage
+- Track file changes
+- Build commit graphs
+- Learn branching fundamentals
+- Respect simplicity over completeness
+
+This is not Git.
+This is learning.
+
+---
+
+## Repository Structure
+
+```text
+.myvcs/
+├── objects/
+├── refs/
+└── HEAD
+```
+
+Simple. Intentional.
+
+---
+
+## Objects: The Heart of VCS
+
+Everything becomes an object:
+- Blobs → file content
+- Trees → directory structure
+- Commits → snapshots + metadata
+
+Hashing guarantees integrity.
+
+---
+
+## Commits and History
+
+A commit stores:
+- Root tree hash
+- Parent commit hash
+- Author
+- Timestamp
+- Message
+
+History becomes a directed graph.
+
+---
+
+## Branching Model
+
+Branches are just pointers.
+
+```text
+refs/heads/main → commit_hash
+```
+
+Lightweight.
+Powerful.
+Elegant.
+
+---
+
+## Why This Matters for DevOps
+
+Understanding VCS internals helps you:
+- Debug corrupted repos
+- Reason about CI triggers
+- Design better workflows
+- Appreciate immutability
+
+---
+
+## Lessons Learned
+
+- Simple systems scale better
+- Abstractions hide complexity
+- Git is elegant, not magical
+
+---
+
+## Final Thoughts
+
+Building MyVCS changed how I use Git.
+
+I stopped memorizing commands —
+and started understanding intent.
+
+That’s the real win.
