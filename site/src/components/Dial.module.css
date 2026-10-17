@@ -1,0 +1,12 @@
+.dial{position:fixed;right:26px;bottom:26px;z-index:70;display:flex;align-items:center;gap:14px}
+.links{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.links:focus-within{position:fixed;left:20px;bottom:20px;width:auto;height:auto;clip:auto;display:flex;gap:12px;padding:10px 14px;background:var(--paper);border:1px solid var(--ink);z-index:99}
+.links a{color:var(--ink);font:600 11px var(--font-mono),monospace}
+.label{text-align:right;padding:8px 12px;border-radius:8px;background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:blur(6px);color:var(--ink)}
+.label b{display:block;font-size:22px;letter-spacing:0;text-transform:none}
+.knobwrap{width:104px;height:104px;touch-action:none;cursor:grab}
+.knobwrap svg{width:104px;height:104px;overflow:visible}
+.tick{cursor:pointer}.tick circle{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}.tick.on circle{fill:var(--apricot)}
+.tick text{font:600 8px var(--font-mono),monospace;fill:var(--ink)}
+.knob{fill:#1b1605;stroke:var(--ink);stroke-width:1}.grip{stroke:#3a3420}
+@media (max-width:760px){.dial{right:10px;bottom:10px;transform:scale(.78);transform-origin:bottom right}.label{display:none}}

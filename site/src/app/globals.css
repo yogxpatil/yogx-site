@@ -1,0 +1,26 @@
+:root{
+  --paper:#f7f3e9; --surface:#ebe6d6; --ink:#1b1605; --muted:#6b6450; --line:#d9d2bf;
+  --night:#161308; --night2:#221e10; --cream:#f2eee4;
+  --apricot:#f99e67; --rust:#882700;
+  --ease:cubic-bezier(.77,0,.18,1);
+}
+html.night{ --paper:#161308; --surface:#221e10; --ink:#f2eee4; --muted:#a39b86; --line:#3a3420; --rust:#e2703f; }
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--font-grotesk),system-ui,sans-serif;overflow-x:hidden}
+body.locked{overflow:hidden}
+.mono{font-family:var(--font-mono),monospace;font-size:11px;font-weight:400;letter-spacing:.2em;text-transform:uppercase}
+.serif{font-family:var(--font-serif),serif;font-style:italic;font-weight:400}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@keyframes flicker{0%,100%{filter:none}10%{filter:brightness(.25)}20%{filter:brightness(1.4)}30%{filter:brightness(.4)}45%{filter:none}}
+body.flick main{animation:flicker .45s steps(1)}
+@media (prefers-reduced-motion: reduce){ body.flick main{animation:none} }
+html.night{color-scheme:dark;--grain-op:.05;--grain-blend:screen}
+
+:root{ --deep-rust:#5a2a10; --label-night:#8c8470; --abyss:#0d0b04; --rust-base:#882700; --ember:#c45a2a; }
+/* no film grain on paper */
+@media print{body>div[aria-hidden="true"]{display:none!important}}
+
+html.yogx-returning [data-intro]{display:none}
+/* lite tier (weak device, lib/perfTier.ts): no film grain: a full-screen blended layer is costly on every scrolled frame */
+html[data-tier='lite'] [data-grain]{display:none}

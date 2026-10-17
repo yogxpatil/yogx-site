@@ -1,0 +1,26 @@
+.missions{position:relative}
+.head{position:absolute;z-index:2;top:calc(10vh - 26px);left:5vw;margin:0;font-weight:600;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.head span{color:var(--muted)}
+.scene{position:relative;min-height:100vh;display:grid;grid-template-columns:minmax(280px,34vw) 1fr;gap:4vw;padding:10vh 5vw;overflow:hidden}
+.sweep{clip-path:polygon(0 0,0 0,-40% 100%,-40% 100%);transition:clip-path 1.2s var(--ease)}
+.sweep.in{clip-path:polygon(0 0,140% 0,100% 100%,0 100%)}
+.num{color:var(--muted)}
+.scene h3{font-weight:900;font-size:clamp(44px,5.4vw,92px);letter-spacing:-.05em;line-height:.88;margin-top:3vh}
+.scene h3 em{font-family:var(--font-serif),serif;font-weight:400;color:var(--rust);letter-spacing:-.02em}
+.scene p{color:var(--muted);font-size:15.5px;line-height:1.6;margin-top:22px;max-width:380px}
+.facts{display:flex;gap:28px;margin-top:30px}.facts>div{display:flex;flex-direction:column-reverse}.facts dd{margin:0}
+.facts b{display:block;font-family:var(--font-serif),serif;font-weight:400;font-size:40px;color:var(--ink);letter-spacing:0;text-transform:none}
+.facts dt{color:var(--muted)}
+.stage{position:relative;min-height:70vh}
+.dark{background:var(--night);color:var(--cream)}.dark p,.dark .num,.dark .facts dt{color:#a39b86}.dark .facts b{color:var(--cream)}.dark h3 em{color:var(--apricot)}
+.apri{position:relative;z-index:2;transform-origin:50% 0;will-change:transform;background:var(--apricot);color:#1b1605}.apri p,.apri .num,.apri .facts dt{color:#5a2a10}.apri .facts b{color:#1b1605}.apri h3 em{color:#882700}
+:global(html.night) .dark{background:var(--abyss)}
+.patch{width:104px;height:104px;margin-bottom:18px;display:block}
+.spin{transform-origin:52px 52px;animation:spin 30s linear infinite}
+.ring{font:600 8.5px var(--font-mono),monospace;letter-spacing:2.6px;fill:currentColor}
+.mark{font-family:var(--font-serif),serif;font-style:italic;font-size:17px;fill:#1b1605}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.spin{animation:none}.sweep{transition:none}}
+@media (max-width:760px){.head{left:6vw;right:6vw;top:calc(9vh - 24px)}.head span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.scene{grid-template-columns:1fr;padding:9vh 6vw;gap:5vh}.stage{min-height:64vh}}
+/* decorative loops pause while the scene is off screen */
+.scene[data-view="false"] .spin{animation-play-state:paused}

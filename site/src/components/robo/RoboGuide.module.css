@@ -1,0 +1,180 @@
+/* Robo, the guide. He roams: the script moves the whole root (Robo + his card, so the card can never drift away
+   from him) to an empty perch with `transform`, timed by --travel. Home = bottom-left inside the HUD frame margin.
+   Bubble = a "radio transmission" card: notched corner, mono channel header, signal bars, a carrier bar that drains. */
+.root{
+  --b-bg:#1b1605; --b-fg:#f2eee4; --b-acc:#f99e67; --b-dim:#a39b86; --b-edge:#f99e6733;
+  /* the chibi is 78 px tall and ~64 px wide: the left gutter between the HUD frame and the grid is ~66 px, and a
+     wider Robo sits on the hero's intro line. Below the ALT ruler (it ends at 82% of the frame), above the CURSOR readout. */
+  --bot:64px; --bot-h:78px;
+  position:fixed;left:0;top:0;z-index:77;width:var(--bot);
+  transform:translate(16px,calc(100vh - 44px - var(--bot-h)));
+  pointer-events:none;transform-origin:0 100%;
+  /* arrive / away use the separate translate + scale properties, so they never fight the roaming transform */
+  transition:opacity .5s var(--ease),translate .5s var(--ease),scale .5s var(--ease),transform var(--travel,0ms) cubic-bezier(.35,.1,.65,.9);
+  animation:arrive .7s .2s var(--ease) both;
+}
+:global(html.night) .root{ --b-bg:#f2eee4; --b-fg:#1b1605; --b-acc:#882700; --b-dim:#6b6450; --b-edge:#88270033; }
+@keyframes arrive{from{opacity:0;translate:0 16px}to{opacity:1;translate:none}}
+
+/* CommandCenter handoff: the scene's Robo talks, this one shrinks into the corner */
+.root[data-away='true']{opacity:0;scale:.6;translate:0 12px}
+/* beaming: when the way to his new perch crosses content he blinks out and reappears there instead of walking through */
+.root > .bot{transition:opacity .2s steps(3,end)}
+.root[data-beam='true'] > .bot,.root[data-beam='true'] > .bubble{opacity:0 !important}
+
+/* ---------- Robo himself ---------- */
+.bot{
+  display:block;width:var(--bot);height:var(--bot-h);padding:0;border:0;background:none;cursor:pointer;
+  pointer-events:auto;color:inherit;border-radius:14px;position:relative;
+  -webkit-tap-highlight-color:transparent;
+}
+.bot:focus-visible{outline:1.5px dashed var(--apricot);outline-offset:5px}
+.body{position:absolute;inset:0;display:block;transform-origin:50% 100%}
+.body > svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.root[data-paused='true'] .body *,.root[data-paused='true'] .waves i{animation-play-state:paused !important}
+.root[data-hushed='true'] .body > [data-chibi]{filter:grayscale(.7) brightness(.85)}
+
+/* painted: an apricot splat lands on his head (opacity only, so it also plays with reduced motion) */
+.paint{opacity:0;pointer-events:none;fill:var(--apricot);transition:opacity .18s}
+.root[data-gag='painted'] .paint{opacity:.92}
+.root[data-gag='painted'] .body{animation:splat .35s var(--ease)}
+@keyframes splat{0%{transform:none}40%{transform:translate(-2px,2px) scale(.94,1.04)}100%{transform:none}}
+
+/* topple: falls over, then gets up like a rewinding tape (stepped) */
+.root[data-gag='topple'] .body{animation:topple 2s both}
+@keyframes topple{
+  0%{transform:none;animation-timing-function:cubic-bezier(.5,0,.9,.4)}
+  28%{transform:rotate(86deg) translate(4px,-4px);animation-timing-function:ease-out}
+  34%{transform:rotate(80deg) translate(4px,-4px)}
+  56%{transform:rotate(84deg) translate(4px,-4px);animation-timing-function:steps(6,end)}
+  92%{transform:none}
+  100%{transform:none}
+}
+
+/* ---------- the transmission card ---------- */
+.bubble{
+  position:absolute;left:calc(var(--bot) + 12px);bottom:12px;
+  width:max-content;max-width:min(280px,34vw);
+  opacity:0;transform:translateY(6px) scale(.97);transform-origin:0 100%;
+  transition:opacity .35s var(--ease),transform .45s var(--ease);
+  pointer-events:none;
+}
+.bubble[data-on='true']{opacity:1;transform:none}
+.bubble[data-on='true'] .card{pointer-events:auto}
+/* no spot clears the headings on screen: stay out of sight until a scroll makes room */
+.bubble[data-fit='false']{opacity:0;transform:translateY(6px) scale(.97)}
+.bubble[data-fit='false'] .card{pointer-events:none}
+/* stowed while Robo walks or the page scrolls under him: out of sight, its reading clock (and carrier) paused */
+/* gone at once (no fade-out to linger over sliding text); it fades back in on return */
+.bubble[data-stow='true']{opacity:0;transform:translateY(6px) scale(.97);transition:none}
+.bubble[data-stow='true'] .card{pointer-events:none}
+.bubble[data-stow='true'] .carrier{animation-play-state:paused}
+
+.card{
+  position:relative;background:var(--b-bg);color:var(--b-fg);
+  padding:9px 14px 12px;
+  /* notched top-right corner + clipped bottom-left (where the signal comes in) */
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,10px 100%,0 calc(100% - 10px));
+  background-image:repeating-linear-gradient(0deg,transparent 0 3px,#ffffff08 3px 4px);
+  box-shadow:inset 0 0 0 1px var(--b-edge);
+}
+:global(html.night) .card{background-image:repeating-linear-gradient(0deg,transparent 0 3px,#16130808 3px 4px)}
+.head{
+  display:flex;align-items:center;gap:8px;
+  font:600 9px var(--font-mono),monospace;letter-spacing:.22em;text-transform:uppercase;color:var(--b-dim);
+  padding-bottom:7px;margin-bottom:7px;border-bottom:1px dashed var(--b-edge);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--b-acc);box-shadow:0 0 8px var(--b-acc);animation:tx 1.1s steps(2,jump-none) infinite}
+@keyframes tx{50%{opacity:.35}}
+.bars{margin-left:auto;display:inline-flex;align-items:flex-end;gap:2px;height:9px}
+.bars b{width:2px;background:var(--b-acc);opacity:.85}
+.bars b:nth-child(1){height:3px}.bars b:nth-child(2){height:5px}.bars b:nth-child(3){height:7px}.bars b:nth-child(4){height:9px;opacity:.3}
+.text{font:500 14.5px/1.42 var(--font-grotesk),system-ui,sans-serif;margin:0;text-wrap:pretty}
+.lane{
+  font-family:var(--font-serif),serif;font-style:italic;font-size:17px;color:var(--b-acc);text-decoration:none;white-space:nowrap;
+  background:linear-gradient(currentColor,currentColor) 0 100%/100% 1px no-repeat;padding-bottom:1px;
+  transition:background-size .35s var(--ease);
+}
+.lane:hover,.lane:focus-visible{background-size:0 1px;outline:none}
+.lane:focus-visible{box-shadow:0 0 0 1.5px var(--b-acc);border-radius:2px}
+.carrier{position:absolute;left:10px;right:0;bottom:0;height:2px;background:var(--b-acc);transform-origin:0 50%;opacity:.8}
+/* the carrier drains over the card's reading time (--read), from when it is actually seen; holds while hovered/focused */
+.bubble[data-run='true'] .carrier{animation:drain var(--read,6000ms) linear forwards}
+.bubble[data-held='true'] .carrier{animation-play-state:paused}
+@keyframes drain{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+
+/* hidden copies of the card at each width it may get: measured in one layout pass, never seen or announced */
+.measure{position:absolute;left:-10000px;top:0;visibility:hidden;pointer-events:none;contain:layout style}
+.measureAt{position:absolute;left:0;top:0;width:max-content}
+
+/* radio waves from Robo's side toward the card */
+.waves{position:absolute;left:-13px;bottom:6px;width:12px;height:22px}
+.waves i{position:absolute;left:0;top:50%;border:1.5px solid var(--apricot);border-left-color:transparent;border-top-color:transparent;border-bottom-color:transparent;border-radius:50%;opacity:0;animation:wave-out 1.4s ease-out infinite}
+.waves i:nth-child(1){width:6px;height:6px;margin:-3px 0 0 -3px}
+.waves i:nth-child(2){width:12px;height:12px;margin:-6px 0 0 -6px;animation-delay:.2s}
+.waves i:nth-child(3){width:18px;height:18px;margin:-9px 0 0 -9px;animation-delay:.4s}
+@keyframes wave-out{0%{opacity:0}30%{opacity:.9}100%{opacity:0}}
+.bubble[data-on='false'] .waves i{animation:none}
+.bubble[data-spot='up'] .waves{left:14px;bottom:-16px;transform:rotate(90deg)}
+.bubble[data-spot='left'] .waves{left:auto;right:-13px;transform:scaleX(-1)}
+
+/* ---------- hide: a little luggage tag hanging off his feet (tertiary until hovered/focused) ---------- */
+.hide{
+  position:absolute;right:-12px;bottom:-4px;pointer-events:auto;cursor:pointer;border:0;
+  font:600 7.5px/1 var(--font-mono),monospace;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--b-fg);background:var(--b-bg);padding:3px 5px 3px 10px;
+  clip-path:polygon(7px 0,100% 0,100% 100%,7px 100%,0 50%);
+  opacity:.55;transition:opacity .25s,transform .25s var(--ease);transform-origin:0 50%;
+}
+.hide::before{content:'';position:absolute;left:4px;top:50%;width:3px;height:3px;margin-top:-1.5px;border-radius:50%;background:var(--b-acc)}
+.root:hover .hide,.hide:focus-visible{opacity:1}
+.hide:hover{transform:rotate(-6deg)}
+.hide:focus-visible{outline:1.5px dashed var(--apricot);outline-offset:3px}
+.root[data-phase='leaving'] .hide{opacity:0;pointer-events:none}
+/* hidden: only the edge tab shows */
+.root[data-phase='gone']{visibility:hidden}
+
+/* ---------- the edge tab: Robo shrunk into a tab stuck to the screen edge, two apricot eyes peeking ---------- */
+.tab{
+  position:fixed;z-index:77;width:20px;height:36px;margin-top:-18px;padding:0;border:0;cursor:pointer;
+  background:#1b1605;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 0 0 1px #f99e6733;transition:width .25s var(--ease);
+  animation:tab-in .45s var(--ease) both;
+}
+:global(html.night) .tab{background:#f2eee4}
+.tab[data-edge='left']{left:0;border-radius:0 11px 11px 0;--from:-100%}
+.tab[data-edge='right']{right:0;border-radius:11px 0 0 11px;--from:100%}
+.tab i{width:5px;height:5px;border-radius:50%;background:var(--apricot);box-shadow:0 0 6px var(--apricot);animation:tab-blink 3.4s steps(1,end) infinite}
+.tab:hover{width:27px}
+.tab:focus-visible{outline:1.5px dashed var(--apricot);outline-offset:3px}
+@keyframes tab-in{from{transform:translateX(var(--from))}to{transform:none}}
+@keyframes tab-blink{0%,93%{transform:none}94%,100%{transform:scaleY(.15)}}
+@media (prefers-reduced-motion:reduce){.tab,.tab i{animation:none}.tab{transition:none}}
+
+/* ---------- eggs counter (tertiary) ---------- */
+.eggs{
+  /* a small tag on top of Robo, kept inside the gutter */
+  position:absolute;left:0;bottom:calc(100% + 4px);white-space:nowrap;
+  font:600 8px/1 var(--font-mono),monospace;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--b-fg);background:var(--b-bg);padding:3px 5px;opacity:.6;transition:opacity .3s;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%);
+}
+.eggs::before{content:'◆';color:var(--b-acc);margin-right:4px}
+.root:hover .eggs{opacity:1}
+
+/* ---------- phone: smaller Robo, card above him ---------- */
+@media (max-width:760px){
+  .root{--bot:46px;--bot-h:56px;transform:translate(18px,calc(100vh - 22px - var(--bot-h)))}
+  .bubble{left:0;bottom:calc(var(--bot-h) + 26px);max-width:70vw;transform-origin:0 100%}
+  .text{font-size:13.5px}
+  .lane{font-size:15.5px}
+}
+
+/* ---------- reduced motion: Robo static, card appears and fades ---------- */
+.root[data-reduce='true']{animation:none;transition:opacity .4s}
+.root[data-reduce='true'][data-away='true']{scale:none;translate:none}
+.root[data-reduce='true'] .body,
+.root[data-reduce='true'] .dot,
+.root[data-reduce='true'] .waves i,
+.root[data-reduce='true'] .carrier{animation:none !important}
+.root[data-reduce='true'] .bubble{transform:none;transition:opacity .3s}

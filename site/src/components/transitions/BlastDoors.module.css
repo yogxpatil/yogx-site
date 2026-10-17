@@ -1,0 +1,20 @@
+.tz{height:100vh;position:relative}.paper{background:var(--paper)}.night{background:var(--night)}.apri{background:var(--apricot)}
+:global(html.night) .tz.night{background:var(--abyss)}
+.doors{position:fixed;inset:0;z-index:74;pointer-events:none}
+.door{position:absolute;left:0;right:0;height:50.5%;background:#1b1605;color:#f2eee4;overflow:hidden;will-change:transform}
+.top{top:0;transform:translateY(-101%)}.bot{bottom:0;transform:translateY(101%)}
+.door::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 119px,#f2eee40d 119px 120px),linear-gradient(#f7f3e908,#1b160500)}
+.hz{position:absolute;left:0;right:0;height:22px;background:repeating-linear-gradient(-45deg,#f99e67 0 18px,#1b1605 18px 36px)}
+.top .hz{bottom:0}.bot .hz{top:0}
+.rivets{position:absolute;left:0;right:0;height:10px;background:radial-gradient(circle,#5b5640 2.5px,transparent 3px) 0 0/60px 10px repeat-x}
+.top .rivets{bottom:34px}.bot .rivets{top:34px}
+.num{position:absolute;right:5vw;bottom:52px;font-family:var(--font-serif),serif;font-style:italic;font-size:22vh;line-height:.8;color:transparent;-webkit-text-stroke:1.5px #f99e6799}
+.lab{position:absolute;left:5vw;font:600 11px var(--font-mono),monospace;letter-spacing:.3em;text-transform:uppercase}
+.top .lab{bottom:62px}.bot .lab{top:62px;color:#a39b86}
+.lab b{color:#f99e67;font-weight:600}
+.name{position:absolute;left:5vw;bottom:92px;font-weight:900;font-size:clamp(40px,7vw,120px);letter-spacing:-.05em;line-height:.85;text-transform:uppercase}
+.meter{position:absolute;right:5vw;top:62px;display:flex;gap:4px;align-items:center;font:600 10px var(--font-mono),monospace;letter-spacing:.2em;color:#a39b86}
+.meter i{width:14px;height:8px;background:#3a3420}.meter i.on{background:#f99e67}
+.seam{position:fixed;left:0;right:0;top:50%;height:2px;margin-top:-1px;z-index:75;background:#f99e67;box-shadow:0 0 18px 4px #f99e67aa;opacity:0;pointer-events:none}
+.lock{position:fixed;left:50%;top:50%;z-index:76;transform:translate(-50%,-50%);font:700 11px var(--font-mono),monospace;letter-spacing:.24em;padding:9px 14px;border:1.5px solid #882700;background:#1b1605;color:#ff7a52;opacity:0;pointer-events:none}
+.lock[data-open="true"]{border-color:#f99e67;color:#f99e67}

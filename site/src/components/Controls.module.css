@@ -1,0 +1,13 @@
+.ctrls{position:fixed;left:calc(50% + 150px);top:22px;z-index:62;display:flex;gap:10px;transition:opacity .8s}
+.btn{background:none;border:none;padding:0;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:5px}
+.btn:focus-visible{outline:2px solid var(--rust);outline-offset:4px}
+.house{position:relative;width:34px;height:54px;border:1.5px solid currentColor;border-radius:7px;background:var(--surface);display:grid;place-items:center}
+.slot{position:absolute;left:50%;top:8px;bottom:8px;width:8px;margin-left:-4px;border-radius:4px;background:color-mix(in srgb,var(--ink) 14%,transparent)}
+.lever{position:absolute;left:50%;width:22px;height:18px;margin-left:-11px;top:6px;border-radius:4px;background:var(--rust);transition:top .35s cubic-bezier(.3,1.6,.5,1)}
+.lever.down{top:28px;background:var(--apricot)}
+.bars{display:flex;gap:2px;align-items:flex-end;height:18px}
+.bars i{width:3px;height:4px;background:currentColor}
+.on .bars i{animation:eq 1s infinite ease-in-out}.on .bars i:nth-child(2){animation-delay:.2s}.on .bars i:nth-child(3){animation-delay:.4s}
+@keyframes eq{50%{height:18px}}
+@media (max-width:760px){.ctrls{left:auto;right:20px;top:34px;transform:scale(.85);transform-origin:top right}}
+@media (prefers-reduced-motion:reduce){.on .bars i{animation:none}}

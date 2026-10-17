@@ -1,0 +1,21 @@
+.mlog{padding:16vh 5vw 10vh;position:relative;background:var(--paper)}
+.head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8vh;transform-origin:50% 100%}
+.head h2{font-weight:900;font-size:clamp(56px,9vw,160px);letter-spacing:-.055em;line-height:.8;text-transform:uppercase}
+.head h2 span{font-family:var(--font-serif),serif;font-style:italic;font-weight:400;text-transform:none;color:var(--rust);letter-spacing:-.02em}
+.list{list-style:none;padding:0}
+.mrow{display:grid;grid-template-columns:200px 60px 1fr 260px;align-items:start;padding:34px 0;border-top:1px solid var(--line);opacity:0;transform:translateY(30px);transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.mrow[data-in="true"]{opacity:1;transform:none}
+.yr{font-family:var(--font-serif),serif;font-size:56px;line-height:.9}
+.yr small{display:block;font:600 10px var(--font-mono),monospace;letter-spacing:.2em;color:var(--muted);margin-top:8px}
+.node{width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);margin-top:16px;background:var(--paper)}
+.mrow[data-in="true"] .node{background:var(--apricot)}
+.mrow h3{font-size:30px;letter-spacing:-.03em;font-weight:700;line-height:1.05}
+.mrow p{color:var(--muted);font-size:15px;line-height:1.6;margin-top:10px;max-width:620px}
+.tag{justify-self:end;text-align:right;font:600 10px/1.9 var(--font-mono),monospace;letter-spacing:.16em;color:var(--muted)}
+.tag b{display:block;font-family:var(--font-serif),serif;font-weight:400;font-size:44px;letter-spacing:0;color:var(--rust);line-height:1}
+.now .yr{color:var(--rust)}
+.cert{display:inline-flex;align-items:center;gap:8px;margin:12px 10px 0 0;padding:8px 12px;border:1px solid var(--ink);font:600 10.5px var(--font-mono),monospace;letter-spacing:.12em}
+.amber{border-color:var(--rust);color:var(--rust)}.amber::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--apricot);animation:pulse 2s infinite}
+@keyframes pulse{50%{transform:scale(1.18);box-shadow:0 0 8px 3px #f99e67aa}}
+@media (prefers-reduced-motion: reduce){.mrow{transition:none}.amber::before{animation:none}}
+@media (max-width:760px){.mlog{padding:12vh 6vw}.head{flex-direction:column;align-items:flex-start;gap:14px}.mrow{grid-template-columns:1fr;gap:10px}.node{display:none}.tag{justify-self:start;text-align:left}.yr{font-size:42px}}

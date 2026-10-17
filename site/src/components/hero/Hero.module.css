@@ -1,0 +1,23 @@
+.wrap{height:230vh;position:relative;overflow:clip}
+.hero{position:sticky;top:0;height:100vh;min-height:620px;overflow:hidden}
+.portal{position:sticky;top:0;height:100vh;margin-top:-100vh;z-index:20;pointer-events:none;background:var(--night);clip-path:ellipse(0 0 at 50% 50%);display:grid;place-items:center;opacity:0}
+.portal span{font:600 11px var(--font-mono),monospace;letter-spacing:.3em;color:#f99e67}
+.blobLayer{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:var(--blob-o,1)}
+.blobLayer>*{transition:opacity .35s ease} /* inner layer: the outer one follows the portal dive per frame and must not lag */
+.blobLayer[data-letters-loose]>*{opacity:0} /* thrown letters: the painted plane would show the wrong headline, so the blob steps aside */
+.blobLayer,.blobLayer *{pointer-events:none !important} /* the R3F canvas wrapper re-enables them and would swallow hovers over the panels below; the blob driver listens on the hero, not here */
+.plane{position:absolute;inset:0;padding:9vh 5vw;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;color:var(--muted)}
+.big{white-space:nowrap;margin-top:auto;font-weight:900;font-size:clamp(64px,13.5vw,240px);line-height:.82;letter-spacing:-.055em;text-transform:uppercase}
+.big:focus{outline:none}.big:focus-visible{outline:2px solid var(--rust);outline-offset:10px;border-radius:2px}
+.big b{color:var(--rust);font-weight:900}
+.seg{display:inline-grid}
+.row{grid-area:1/1;display:flex;justify-content:space-between}
+.alch{visibility:hidden}
+.base{display:inline-block;width:0;height:0} /* zero-size probe: its top edge is the exact text baseline, read by the blob painter */
+.foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:4vh;color:var(--muted)}
+.foot p{font-family:var(--font-grotesk),sans-serif;font-size:15px;line-height:1.5;max-width:380px;text-transform:none;letter-spacing:0;font-weight:400}
+@media (max-width:760px){.foot{flex-direction:column;align-items:flex-start;gap:10px}}
+.hint{position:absolute;left:50%;bottom:5.5vh;transform:translateX(-50%);color:var(--muted);z-index:4;pointer-events:none}
+@media (max-width:760px){.plane{padding:12vh 6vw 9vh}.big{font-size:15.5vw}}
+:global(html.night) .portal{background:var(--abyss)}

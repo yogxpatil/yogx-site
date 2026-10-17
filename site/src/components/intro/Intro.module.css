@@ -1,0 +1,34 @@
+/* The automatic intro overlay. Everything here is placed with transform and animated (WAAPI, from Intro.tsx) on
+   transform, opacity and clip-path only. Server-rendered: first paint is the dark stage, the hero is underneath. */
+.intro{position:fixed;inset:0;z-index:80;pointer-events:none;overflow:hidden;contain:strict}
+.back{position:absolute;inset:0}
+.dark{position:absolute;inset:0;background:var(--night)}
+.paper{position:absolute;inset:0;background:var(--paper);clip-path:circle(0px at 50% 46%)}
+.glow,.socket,.ring,.spark,.orb,.robo,.bulb{position:absolute;left:0;top:0}
+.glow,.socket,.ring,.spark,.orb{opacity:0}
+
+/* a wall socket on the dark: plate + two slots */
+.socket{width:20px;height:26px;margin:-13px 0 0 -10px;background:#2b2414;border:1.5px solid #5a4e33;border-radius:5px}
+.socket::before,.socket::after{content:"";position:absolute;top:7px;width:3px;height:9px;border-radius:2px;background:#0c0904}
+.socket::before{left:4px}.socket::after{right:4px}
+
+.glow{width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;background:radial-gradient(circle,#f99e6788 0,#f99e6726 38%,transparent 66%)}
+.ring{width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:1.5px solid #f99e67}
+.spark{width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:radial-gradient(circle,#fff5d0,#f99e67 36%,transparent 68%)}
+.glow,.ring,.spark,.orb,.robo{will-change:transform,opacity}
+
+/* the light that becomes the blob: drawn at the blob's full size, scaled down while it is a lamp (no blurry upscaling) */
+.orb{border-radius:50%;transform-origin:50% 50%;background:radial-gradient(circle at 38% 34%,#ffc49f,#f99e67 55%,#e9844a);border:3px solid #882700}
+
+.robo{transform:translate(-200px,-200px)}
+.bulb{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff3df,#f99e67 62%);box-shadow:0 0 14px 4px #f99e6799}
+
+.hint{position:absolute;right:5vw;bottom:5vh;color:#a39b86;opacity:.75}
+
+/* reduced motion: no intro, the site appears with a short fade */
+@media (prefers-reduced-motion:reduce){
+  .intro{background:var(--paper);animation:fade .35s .05s both}
+  .intro > *{display:none}
+}
+@keyframes fade{to{opacity:0}}
+@media (max-width:760px){.hint{right:6vw;bottom:4vh}}

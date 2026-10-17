@@ -1,0 +1,172 @@
+/* Robo v2, the tiny chibi. Ported from docs/superpowers/specs/2026-10-17-robo-chibi-reference.html (colour "Paper").
+   The mood lives on the root as data-mood; every motion is a transform on a part of the rig, pivoting in viewBox space. */
+.root{
+  /* Paper. Day: he is a button on the paper background, so his outline is ink-dark (--muted, 5.3:1 on paper) and his
+     limbs mid-tone (3.4:1): WCAG 1.4.11 asks 3:1 for a control's shape. Night keeps the pale reference palette below. */
+  --c-body:#ebe6d6; --c-line:#6b6450; --c-limb:#8a826c; --c-visor:#1b1605; --c-cloud:#a39b86;
+  --c-apricot:#f99e67; --c-glow:#f99e67;
+  --c-shadow:#1b160530;
+  --g:.62s;
+  position:relative;display:block;flex:none;pointer-events:none;
+  /* soft ink-tinted edge so the pale body never vanishes on the paper background */
+  --edge:drop-shadow(0 0 .6px #1b1605aa) drop-shadow(0 2px 2px #1b160522);
+}
+.root[data-mood='angry']{--c-glow:#ff7a52}
+:global(html.night) .root{--c-line:#a39b86;--c-limb:#d8d0bb;--c-shadow:#0006;--edge:drop-shadow(0 0 7px #f99e6740)}
+
+.flip{position:absolute;inset:0}
+.root[data-facing='left'] .flip{transform:scaleX(-1)}
+.rig{width:100%;height:100%;overflow:visible;display:block;filter:var(--edge)}
+.rig *{transform-box:view-box}
+
+/* paint helpers (CSS vars in SVG attributes are unreliable, classes are not) */
+.fb{fill:var(--c-body)}.fl{fill:var(--c-limb)}.fv{fill:var(--c-visor)}.fg{fill:var(--c-glow)}.fcloud{fill:var(--c-cloud)}
+.sl{stroke:var(--c-line)}.sg{stroke:var(--c-glow)}
+.light{fill:var(--c-apricot)}
+.steam{stroke:#a29684}
+
+.all{transform-origin:32px 77px}
+.head{transform-origin:32px 46px}
+.ant{transform-origin:32px 10px}
+.la{transform-origin:21px 53px}.ra{transform-origin:43px 53px}
+.ll{transform-origin:28px 64px}.rl{transform-origin:36px 64px}
+
+.shadow{position:absolute;left:50%;bottom:-5%;width:60%;height:9%;margin-left:-30%;border-radius:50%;background:var(--c-shadow);transform-origin:center}
+
+/* ---- idle: breathe (blink is in the component) ---- */
+.root[data-mood='idle'] .head{animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{50%{transform:translateY(.8px) scale(1.01,.985)}}
+
+/* ---- walk: waddle, squash on each step, the head lags, the antenna springs ---- */
+.root[data-mood='walk'] .all{animation:waddle var(--g) ease-in-out infinite}
+.root[data-mood='walk'] .head{animation:lag var(--g) ease-in-out infinite}
+.root[data-mood='walk'] .ant{animation:spring calc(var(--g) / 2) ease-in-out infinite}
+.root[data-mood='walk'] .ll{animation:stepA var(--g) ease-in-out infinite}
+.root[data-mood='walk'] .rl{animation:stepB var(--g) ease-in-out infinite}
+.root[data-mood='walk'] .la{animation:swingA var(--g) ease-in-out infinite}
+.root[data-mood='walk'] .ra{animation:swingB var(--g) ease-in-out infinite}
+.root[data-mood='walk'] .shadow{animation:shadow calc(var(--g) / 2) ease-in-out infinite}
+@keyframes waddle{0%,100%{transform:rotate(-5deg) translateY(0) scale(1.03,.97)}25%{transform:rotate(0) translateY(-3px) scale(.98,1.03)}50%{transform:rotate(5deg) translateY(0) scale(1.03,.97)}75%{transform:rotate(0) translateY(-3px) scale(.98,1.03)}}
+@keyframes lag{0%,100%{transform:rotate(3deg)}50%{transform:rotate(-3deg)}}
+@keyframes spring{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+@keyframes stepA{0%,100%{transform:rotate(30deg)}50%{transform:rotate(-30deg) translateY(-1px)}}
+@keyframes stepB{0%,100%{transform:rotate(-30deg) translateY(-1px)}50%{transform:rotate(30deg)}}
+@keyframes swingA{0%,100%{transform:rotate(-35deg)}50%{transform:rotate(35deg)}}
+@keyframes swingB{0%,100%{transform:rotate(35deg)}50%{transform:rotate(-35deg)}}
+@keyframes shadow{50%{transform:scaleX(.8);opacity:.6}}
+
+/* ---- run: leans forward, arms pump, dust ---- */
+.root[data-mood='run'] .all{animation:runbob var(--g) ease-in-out infinite;rotate:12deg}
+.root[data-mood='run'] .head{animation:lag calc(var(--g) / 2) ease-in-out infinite}
+.root[data-mood='run'] .ant{animation:spring calc(var(--g) / 3) ease-in-out infinite;rotate:-25deg}
+.root[data-mood='run'] .ll{animation:runA var(--g) linear infinite}
+.root[data-mood='run'] .rl{animation:runB var(--g) linear infinite}
+.root[data-mood='run'] .la{animation:pumpA var(--g) ease-in-out infinite}
+.root[data-mood='run'] .ra{animation:pumpB var(--g) ease-in-out infinite}
+@keyframes runbob{0%,50%,100%{transform:translateY(0) scale(1.04,.96)}25%,75%{transform:translateY(-6px) scale(.97,1.04)}}
+@keyframes runA{0%,100%{transform:rotate(55deg)}50%{transform:rotate(-55deg)}}
+@keyframes runB{0%,100%{transform:rotate(-55deg)}50%{transform:rotate(55deg)}}
+@keyframes pumpA{0%,100%{transform:rotate(-80deg)}50%{transform:rotate(70deg)}}
+@keyframes pumpB{0%,100%{transform:rotate(70deg)}50%{transform:rotate(-80deg)}}
+.dust{position:absolute;bottom:2%;left:6%;width:8px;height:8px;border-radius:50%;background:#1b160524;opacity:0}
+.root[data-mood='run'] .dust{animation:puff .5s ease-out infinite}
+.root[data-mood='run'] .dust:nth-of-type(2){left:14%;animation-delay:.25s}
+@keyframes puff{from{opacity:1}to{transform:translate(-14px,-10px) scale(2.2);opacity:0}}
+
+/* ---- jump: anticipation squash, stretch up, landing squash ---- */
+.root[data-mood='jump'] .all{animation:jump 1s cubic-bezier(.3,.6,.4,1) infinite}
+.root[data-mood='jump'] .la{animation:cheerA 1s ease-in-out infinite}
+.root[data-mood='jump'] .ra{animation:cheerB 1s ease-in-out infinite}
+.root[data-mood='jump'] .ant{animation:spring .25s ease-in-out infinite}
+.root[data-mood='jump'] .ll{animation:tuck 1s ease-in-out infinite}
+.root[data-mood='jump'] .rl{animation:tuck 1s ease-in-out infinite reverse}
+.root[data-mood='jump'] .shadow{animation:jshadow 1s cubic-bezier(.3,.6,.4,1) infinite}
+@keyframes jump{0%{transform:translateY(0) scale(1)}18%{transform:translateY(0) scale(1.18,.8)}45%{transform:translateY(-58px) scale(.9,1.12) rotate(-6deg)}60%{transform:translateY(-62px) scale(1) rotate(6deg)}84%{transform:translateY(0) scale(1.2,.78)}100%{transform:translateY(0) scale(1)}}
+@keyframes jshadow{18%{transform:scaleX(1.2)}50%{transform:scaleX(.45);opacity:.35}84%{transform:scaleX(1.25)}}
+@keyframes cheerA{0%,18%,100%{transform:rotate(20deg)}45%,70%{transform:rotate(160deg)}}
+@keyframes cheerB{0%,18%,100%{transform:rotate(-20deg)}45%,70%{transform:rotate(-160deg)}}
+@keyframes tuck{45%,60%{transform:rotate(-25deg) translateY(-2px)}}
+
+/* ---- angry: stomp-stomp (only Robo shakes), steam from the headphones ---- */
+.root[data-mood='angry'] .all{animation:stompbody .9s ease-in infinite}
+.root[data-mood='angry'] .rl{animation:stomp .9s ease-in infinite}
+.root[data-mood='angry'] .ll{animation:stomp .9s ease-in .45s infinite}
+.root[data-mood='angry'] .la{transform:rotate(-55deg)}
+.root[data-mood='angry'] .ra{transform:rotate(55deg)}
+.root[data-mood='angry'] .head{animation:fume .15s linear infinite}
+@keyframes stomp{0%,100%{transform:rotate(0)}30%{transform:rotate(-40deg) translateY(-5px)}45%{transform:rotate(0) translateY(0)}}
+@keyframes stompbody{0%,100%,50%{transform:translateY(0)}20%,70%{transform:translateY(-3px)}46%,96%{transform:translateY(1px) scale(1.05,.95)}}
+@keyframes fume{50%{transform:translateX(.7px)}}
+.steam{opacity:0}
+.root[data-mood='angry'] .steam{opacity:1}
+.root[data-mood='angry'] .steam path{animation:steam 1s ease-out infinite}
+.root[data-mood='angry'] .steam path:nth-child(2){animation-delay:.5s}
+@keyframes steam{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-12px);opacity:0}}
+
+/* ---- sad / sad shuffle: droop, slow shuffle, tiny rain cloud ---- */
+.root:is([data-mood='sad'],[data-mood='sadWalk']) .head{transform:rotate(-7deg) translateY(3px)}
+.root:is([data-mood='sad'],[data-mood='sadWalk']) .ant{transform:rotate(-55deg)}
+.root:is([data-mood='sad'],[data-mood='sadWalk']) .la{transform:rotate(8deg)}
+.root:is([data-mood='sad'],[data-mood='sadWalk']) .ra{transform:rotate(-8deg)}
+.root[data-mood='sadWalk'] .all{animation:waddle 1.5s ease-in-out infinite}
+.root[data-mood='sadWalk'] .ll{animation:stepA 1.5s ease-in-out infinite}
+.root[data-mood='sadWalk'] .rl{animation:stepB 1.5s ease-in-out infinite}
+.cloud{opacity:0;transition:opacity .4s}
+.root:is([data-mood='sad'],[data-mood='sadWalk']) .cloud{opacity:1}
+.cloud line{animation:rain .6s linear infinite}
+.cloud line:nth-of-type(2){animation-delay:.2s}
+.cloud line:nth-of-type(3){animation-delay:.4s}
+@keyframes rain{from{transform:translateY(0);opacity:1}to{transform:translateY(8px);opacity:0}}
+
+/* ---- namaste: hands meet at the chest, bow, sparkle ---- */
+.root[data-mood='namaste'] .la{transform:rotate(-62deg)}
+.root[data-mood='namaste'] .ra{transform:rotate(62deg)}
+.root[data-mood='namaste'] .all{animation:bow 2.6s ease-in-out infinite}
+.root[data-mood='namaste'] .head{animation:nod 2.6s ease-in-out infinite}
+@keyframes bow{0%,30%,100%{transform:rotate(0)}48%,72%{transform:translateY(3px) scale(1.02,.97)}}
+@keyframes nod{0%,30%,100%{transform:rotate(0)}48%,72%{transform:rotate(0) translateY(4px)}}
+.spark{opacity:0}
+.root[data-mood='namaste'] .spark{animation:spark 2.6s ease-out infinite}
+@keyframes spark{45%{opacity:0;transform:scale(.4)}55%{opacity:1;transform:scale(1.1)}75%{opacity:0;transform:scale(1.4)}}
+
+/* ---- wave / point / sit ---- */
+.root[data-mood='wave'] .ra{animation:wave .55s ease-in-out infinite}
+.root[data-mood='wave'] .all{animation:breathe 1.1s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:rotate(-165deg)}50%{transform:rotate(-120deg)}}
+.root[data-mood='point'] .ra{transform:rotate(-98deg)}
+.root[data-mood='point'] .la{transform:rotate(18deg)}
+.root[data-mood='point'] .head{transform:rotate(6deg)}
+.root[data-mood='point'] .ant{animation:spring .5s ease-in-out infinite}
+.root[data-mood='sit'] .ll{transform:rotate(-80deg) translate(0,-2px)}
+.root[data-mood='sit'] .rl{transform:rotate(-70deg) translate(0,-2px)}
+.root[data-mood='sit'] .all{transform:translateY(7px)}
+.root[data-mood='sit'] .ra{animation:sip 3.2s ease-in-out infinite}
+.root[data-mood='sit'] .head{animation:sipHead 3.2s ease-in-out infinite}
+@keyframes sip{0%,60%,100%{transform:rotate(-20deg)}72%,88%{transform:rotate(-125deg)}}
+@keyframes sipHead{0%,60%,100%{transform:rotate(0)}72%,88%{transform:rotate(-8deg)}}
+.mug{opacity:0;transition:opacity .3s}
+.root[data-mood='sit'] .mug{opacity:1}
+
+/* ---- dizzy: wobble, stars orbit ---- */
+.root[data-mood='dizzy'] .all{animation:wobble 1.2s ease-in-out infinite}
+@keyframes wobble{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+.stars{opacity:0}
+.root[data-mood='dizzy'] .stars{opacity:1;animation:orbit 1.2s linear infinite;transform-origin:32px 4px}
+@keyframes orbit{to{transform:rotate(360deg)}}
+
+/* ---- sparks (egg found, VERIFIED stamp): a burst over the head ---- */
+.pop{transform-box:fill-box;transform-origin:center;opacity:0;animation:pop .85s forwards}
+@keyframes pop{0%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1.3) translateY(-3px)}100%{opacity:0;transform:translateY(-6px)}}
+
+/* ---- reduced motion: no animation, a static pose per mood. One source: data-reduce, which the component sets from
+   useReducedMotion (the guide's chibi renders only on the client; the CommandCenter one is far below the fold before
+   hydration) ---- */
+.root[data-reduce='true'] *{animation:none !important;transition:none !important}
+.root[data-reduce='true'][data-mood='wave'] .ra{transform:rotate(-140deg)}
+.root[data-reduce='true'][data-mood='jump'] .la{transform:rotate(20deg)}
+.root[data-reduce='true'][data-mood='jump'] .ra{transform:rotate(-20deg)}
+.root[data-reduce='true'][data-mood='sit'] .ra{transform:rotate(-20deg)}
+.root[data-reduce='true'][data-mood='sadWalk'] .all{transform:none}
+.root[data-reduce='true'] .pop{opacity:0}
+/* lite tier (weak device): idle Robo stands still (the screen's own loop is the one that plays); he still walks, waves, reacts */
+:global(html[data-tier='lite']) .root[data-mood='idle'] .head{animation:none}

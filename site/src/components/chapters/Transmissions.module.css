@@ -1,0 +1,18 @@
+.tx{background:var(--night);color:var(--cream);padding:16vh 5vw;min-height:100vh;box-sizing:border-box}
+:global(html.night) .tx{background:var(--abyss)}
+.top{display:flex;justify-content:space-between;align-items:flex-end}
+.tx h2{font-family:var(--font-serif),serif;font-weight:400;font-size:clamp(50px,7vw,120px);line-height:.9;letter-spacing:-.02em}
+.tx h2 em{color:var(--apricot)}
+.row{position:relative;display:grid;grid-template-columns:150px 1fr 160px;align-items:center;padding:36px 0;border-top:1px solid #3a3420;overflow:hidden;color:inherit;text-decoration:none}
+.top + .row{margin-top:8vh}
+.fq{font:600 10px var(--font-mono),monospace;letter-spacing:.2em;color:#8c8470}
+.row h3{font-size:clamp(26px,3vw,46px);letter-spacing:-.03em;font-weight:700;line-height:1.05;transition:transform .5s var(--ease)}
+.row h3 em{font-family:var(--font-serif),serif;font-weight:400;color:var(--apricot)}
+.go{justify-self:end;font:600 10px var(--font-mono),monospace;letter-spacing:.18em;color:#8c8470}
+.row svg{position:absolute;left:0;right:0;bottom:6px;width:100%;height:40px;opacity:0;transition:opacity .4s}
+.row svg path{fill:none;stroke:var(--apricot);stroke-width:1.5}
+.row:hover svg,.row:focus-visible svg{opacity:1}.row:hover h3,.row:focus-visible h3{transform:translateX(20px)}
+.row:focus-visible{outline:2px solid var(--apricot);outline-offset:4px}
+.soon{opacity:.45}
+@media (prefers-reduced-motion: reduce){.row h3{transition:none}}
+@media (max-width:760px){.tx{padding:12vh 6vw}.top{flex-direction:column;align-items:flex-start;gap:14px}.row{grid-template-columns:1fr;gap:8px}.go{justify-self:start}}

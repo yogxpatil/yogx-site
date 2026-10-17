@@ -1,0 +1,58 @@
+export const fastLane = {
+  name: 'Yogesh Patil',
+  role: 'DevOps Engineer',
+  place: 'Surat, India',
+  intro: [
+    'I have spent 3+ years owning production container platforms on Amazon ECS and Kubernetes, across six separate client AWS accounts.',
+    'I led a team of three that built one-click deployment, and I built the tools my team now watches daily: HeartBeat and CommandCenter.',
+  ] as [string, string],
+  numbers: [
+    ['100+', 'services running on ECS'],
+    ['6', 'client AWS accounts'],
+    ['75%', 'client cost cut by rightsizing ECS'],
+    ['60%', 'faster deployments'],
+    ['50+', 'production incidents resolved'],
+    ['~75%', 'of infrastructure in Terraform'],
+  ] as [string, string][],
+  experience: [
+    {
+      org: 'WonderLend Hubs Pvt Ltd',
+      role: 'DevOps Engineer',
+      where: 'Mumbai, India · remote',
+      dates: 'Jul 2023 – present',
+      points: [
+        'Moved 100+ services from one overloaded server to Amazon ECS, one service per task, so a failure stays contained and load is visible per service.',
+        'Built GitLab pipelines with reusable templates and a manual approval gate before production, cutting deployment time by up to 60%.',
+        'Led a team of three building One-Click Deployment, with CommandCenter checking system health before and after each release.',
+        'Resolved 50+ production incidents across ECS, API Gateway, Lambda, networking and IAM by finding the root cause.',
+        'Brought about 75% of infrastructure under Terraform and wrote Python automation that cut manual checking by 40%.',
+        'Rightsized one client’s ECS workloads from real load data: 75% cheaper, no performance loss, and a clean handover.',
+      ],
+    },
+    {
+      org: 'Alpha Recruitment',
+      role: 'Intern',
+      where: 'New Zealand · remote',
+      dates: 'Aug – Dec 2021',
+      points: ['Helped move a VB.NET portal to ASP.NET Core and redesign it, across 10+ modules.'],
+    },
+  ],
+  projects: [
+    { name: 'OCD · One-Click Deployment', line: 'Releases many services together, end to end, with no manual sign-off.', href: null as string | null },
+    { name: 'HeartBeat', line: 'One dashboard that spots overloaded ECS workloads across all six accounts. Open source.', href: null as string | null },
+    { name: 'CommandCenter', line: 'Checks health and anomalies before and after every release.', href: null as string | null },
+    { name: 'Custom Terraform provider', line: 'Built from scratch on HashiCorp’s plugin SDK, to learn how providers work inside.', href: null as string | null },
+  ],
+  skills: [
+    ['Containers', 'Docker · Amazon ECS · Kubernetes · Helm · Argo CD'],
+    ['CI/CD', 'GitLab CI/CD · Jenkins · Git'],
+    ['Observability', 'Prometheus · Grafana · Alertmanager · SigNoz · CloudWatch'],
+    ['AWS & Networking', 'Lambda · API Gateway · DynamoDB · SQS/SNS · RDS · ECR · ALB/NLB · VPC · VPN'],
+    ['Security & Auth', 'OAuth2/JWT via Cognito and Lambda Authorizers · IAM least privilege'],
+    ['IaC', 'Terraform (custom provider) · Ansible'],
+    ['Linux & Scripting', 'Linux · Python · Bash'],
+  ] as [string, string][],
+  certs: ['HashiCorp Terraform Associate', 'Google Cloud Arcade · Legend tier', 'HeartBeat featured on LinkedIn'],
+  education: ['M.Sc. IT · 2021–23', 'B.Sc. IT · 2018–21', 'Veer Narmad South Gujarat University'],
+  contact: { email: 'yogeshpatil6717@gmail.com', linkedin: 'https://www.linkedin.com/in/yogeshp-dev' },
+};

@@ -1,0 +1,12 @@
+.tunnel{height:320vh;background:var(--paper);color:var(--ink);position:relative}
+.sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+/* every quote sits in the same grid cell; only one is legible at a time */
+.tun{height:100%;display:grid;place-items:center;perspective:700px;list-style:none;padding:0}
+.q{grid-area:1/1;display:flex;flex-direction:column;align-items:center;font-size:min(calc(var(--q) * 1vw),24vh);pointer-events:none}
+.tl{display:block;font-weight:900;text-transform:uppercase;letter-spacing:-.05em;font-size:1em;line-height:.86;white-space:nowrap;will-change:transform}
+.t1{transform-origin:50% 100%}.t3{transform-origin:50% 0%}
+.t2{font-family:var(--font-serif),serif;font-style:italic;font-weight:400;text-transform:none;letter-spacing:-.02em;color:var(--rust);font-size:.72em;line-height:1.05;padding:1vh 0}
+.label{position:absolute;left:5vw;top:5vh;color:var(--muted)}
+.count{position:absolute;left:5vw;top:calc(5vh + 22px);color:var(--muted);opacity:.8}
+:global(html.night) .tunnel{background:var(--abyss)}
+:global(html.night) .t2{color:var(--apricot)}

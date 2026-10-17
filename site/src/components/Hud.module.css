@@ -1,0 +1,29 @@
+.hud{position:fixed;inset:14px;pointer-events:none;z-index:60;color:var(--ink);transition:color .5s}
+.dark{color:#f2eee4}
+.frame{position:absolute;inset:0;border:1px solid currentColor;opacity:.14}
+.cn{position:absolute;width:18px;height:18px;border:0 solid currentColor;opacity:.7}
+.tl{left:-1px;top:-1px;border-width:2px 0 0 2px}.tr{right:-1px;top:-1px;border-width:2px 2px 0 0}
+.bl{left:-1px;bottom:-1px;border-width:0 0 2px 2px}.br{right:-1px;bottom:-1px;border-width:0 2px 2px 0}
+.t{position:absolute;font:600 9.5px var(--font-mono),monospace;letter-spacing:.22em;text-transform:uppercase;white-space:nowrap}
+.t i{font-style:normal;opacity:.55;margin-right:6px}
+.t b{font-weight:600;color:var(--rust)} .dark .t b{color:#e2703f}
+.live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--apricot);margin-right:7px;box-shadow:0 0 8px var(--apricot)}
+.ruler{position:absolute;left:10px;top:18%;bottom:18%;width:16px;opacity:.6;background:repeating-linear-gradient(to bottom,currentColor 0 1px,transparent 1px 12px) left/6px 100% no-repeat}
+.mk{position:absolute;left:18px;transform:translateY(-50%);font:600 9px var(--font-mono),monospace;letter-spacing:.14em;white-space:nowrap}
+.xh{position:fixed;left:0;top:0;pointer-events:none;z-index:59;background:var(--ink);opacity:.09}
+.v{width:1px;height:100vh}.h{height:1px;width:100vw}
+/* quiet tertiary shortcut for hiring people: bottom row, dim until hovered or focused */
+.quiet{z-index:61}
+.links{position:absolute;left:calc(50% + 170px);bottom:10px;display:flex;align-items:center;gap:22px;pointer-events:none}
+.fast{pointer-events:auto;font:600 9.5px var(--font-mono),monospace;letter-spacing:.22em;text-transform:uppercase;color:inherit;text-decoration:none;opacity:.6;padding:4px 2px;border-bottom:1px solid transparent;transition:opacity .25s,border-color .25s}
+.deploy{background:none;border-top:0;border-left:0;border-right:0;cursor:pointer}
+.fast:hover,.fast:focus-visible{opacity:1;border-bottom-color:currentColor}
+.fast:focus-visible{outline:2px solid var(--rust);outline-offset:4px}
+/* narrower than 1400px the Dial's label would collide: stack the links above the cursor readout, bottom-left */
+@media (max-width:1400px){.links{left:20px;bottom:34px;flex-direction:column;align-items:flex-start;gap:4px}}
+@media (max-width:760px){.links{bottom:8px;flex-direction:row;gap:18px}}
+@media (max-width:760px){.t{display:none}.t.keep{display:block}.ruler,.xh{display:none}}
+@media (hover:none){.xh{display:none}}
+@media (prefers-reduced-motion: reduce){.hud{transition:none}}
+/* light surfaces that stay light in night mode (apricot scene, paper Signal): fixed dark ink, never the theme ink */
+.ink{color:#1b1605}.ink .t b{color:#882700}
