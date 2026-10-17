@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { envs, feedSeed, hero, type FeedRow } from '@/content/site';
-import { nextBars, pushFeed, blipPosition, ringOffset } from '@/lib/instruments';
+import { nextBars, pushFeed, blipPosition, ringOffset, rackScale } from '@/lib/instruments';
 import { appStore } from '@/lib/appState';
 import { useStore } from '@/lib/store';
 import { useOnScreen } from '@/lib/useOnScreen';
@@ -11,6 +11,7 @@ import s from './Instruments.module.css';
 
 const hm = () => new Date().toTimeString().slice(0, 5);
 const RADAR = [40, 100, 165, 230, 290, 340], RR = [0.55, 0.75, 0.45, 0.8, 0.6, 0.35], CIRC = 377;
+const RADAR_R = 58;   // radar is 124 px: blips live inside a 58 px radius, 4 px in from the rim
 
 export function Instruments() {
   const entered = useStore(appStore, (x) => x.entered);
@@ -22,6 +23,27 @@ export function Instruments() {
   const reduce = useReducedMotion();
   const [ringOn, setRingOn] = useState(false);
   const prod2 = () => emitRobo({ type: 'egg', id: 'prod2' });
+  const rack = useRef<HTMLDivElement>(null);
+
+  // fit the rack above the name + headline: on resize and whenever the headline's box changes (fonts loading)
+  useEffect(() => {
+    const el = rack.current, stage = root.current?.closest('[data-hero-stage]');
+    const limit = stage?.querySelector<HTMLElement>('[data-hero-name]') ?? stage?.querySelector<HTMLElement>('h1');
+    if (!el || !stage || !limit) return;
+    const fit = () => {
+      el.style.transform = '';
+      const r = el.getBoundingClientRect();
+      if (r.width === 0) return; // hidden by the narrow-screen rule
+      const k = rackScale({ top: r.top, w: r.width, h: r.height }, limit.getBoundingClientRect().top, innerWidth * 0.9);
+      el.dataset.fit = k === null ? 'hidden' : 'on';
+      el.style.transform = k === null || k === 1 ? '' : `scale(${k})`;
+    };
+    fit();
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(fit) : null;
+    ro?.observe(limit); ro?.observe(stage);
+    addEventListener('resize', fit);
+    return () => { ro?.disconnect(); removeEventListener('resize', fit); };
+  }, []);
 
   useEffect(() => {
     let k = 0; const next = () => setFeed((r) => pushFeed(r, { ...feedSeed[k++ % feedSeed.length], time: hm() }));
@@ -48,6 +70,7 @@ export function Instruments() {
 
   return (
     <div ref={root} data-live={visible && entered} className={s.layer} role="group" aria-label="Live infrastructure instruments">
+      <div ref={rack} className={s.rack}>
       <div className={`${s.pnl} ${s.p1}`} data-panel="0"><div className={s.ttl}><span>PNL-01 · FLEET</span><b>LIVE</b></div>
         <div className={s.n}>{hero.fleetCount}<small>ECS SERVICES</small></div>
         <div className={s.bars} aria-hidden>{bars.map((b, i) => <i key={i} className={b.hot ? s.hot : ''} style={{ height: `${b.h}%` }} />)}</div>
@@ -56,16 +79,18 @@ export function Instruments() {
         <div className={s.feed}>{feed.map((r, i) => <div key={`${r.ticket}-${r.time}-${i}`}><span>{r.time}</span>{r.ticket} <em>{r.kind}→{r.env}</em> ✓</div>)}</div></div>
       <div className={`${s.pnl} ${s.p3}`} data-panel="2"><div className={s.ttl}><span>PNL-03 · ENV RADAR</span><b>6/6</b></div>
         <div className={s.radar} aria-hidden><div className={s.sweep} />
-          {envs.map((e, i) => { const p = blipPosition(RADAR[i], RR[i], 96); return <div key={e} className={s.blip} {...(e === 'PROD2' ? { 'data-prod2': '', onPointerEnter: prod2, onPointerDown: prod2 } : {})} style={{ left: p.x + 4, top: p.y + 4, animationDelay: `${(RADAR[i] / 360) * 4 - 4}s` }}><span>{e}</span></div>; })}
+          {envs.map((e, i) => { const p = blipPosition(RADAR[i], RR[i], RADAR_R); return <div key={e} className={s.blip} {...(e === 'PROD2' ? { 'data-prod2': '', onPointerEnter: prod2, onPointerDown: prod2 } : {})} style={{ left: p.x + 4, top: p.y + 4, animationDelay: `${(RADAR[i] / 360) * 4 - 4}s` }}><span>{e}</span></div>; })}
         </div>
         <p className="sr-only">Environments online: {envs.join(', ')}</p></div>
-      <div className={`${s.pnl} ${s.p4}`} data-panel="3">
+      <div className={`${s.pnl} ${s.p4}`} data-panel="3"><div className={s.ttl}><span>PNL-04 · COST</span><b>ECS</b></div>
+        <div className={s.ringRow}>
         <svg className={s.ring} viewBox="0 0 150 150" width={150} height={150} aria-hidden><circle cx={75} cy={75} r={60} className={s.ringBg} />
           <circle cx={75} cy={75} r={60} className={s.ringFg} strokeDasharray={CIRC} strokeDashoffset={ringOn ? ringOffset(hero.savingsPct, CIRC) : CIRC} transform="rotate(-90 75 75)" />
           <text x={75} y={80} textAnchor="middle" className={s.ringT}>{pct === 0 ? '0%' : `−${pct}%`}</text></svg>
         <span className="sr-only">Client cost cut by ECS rightsizing: {hero.savingsPct}%</span>
-        <div><div className={s.ttl} style={{ margin: 0 }}><span>PNL-04</span></div>
-          <div className="mono" style={{ fontSize: 9.5, lineHeight: 1.7, color: 'var(--muted)' }}>CLIENT<br />COST CUT<br />RIGHTSIZED</div></div></div>
+        <div className={s.cap} aria-hidden>CLIENT<br />COST CUT<br />RIGHTSIZED</div>
+        </div></div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { Milestone } from '@/lib/chapters/route';
 import type { Seg } from '@/lib/missions/robo';
-import { CC_BACKSTORY } from '@/content/robo-script';
+import { CC_BACKSTORY, CC_OUT_LINE } from '@/content/robo-script';
 /** 'auto' chapters repaint with the day/night breaker: they read as light in day and dark at night. */
 export type Tone = 'light' | 'dark' | 'apri' | 'auto';
 export type Chapter = { id: string; num: number; name: string; tone: Tone };
@@ -30,7 +30,9 @@ export const feedSeed: FeedRow[] = [
 export const hero = {
   architect: ['DevOps', 'Architect'],
   alchemist: ['Digital', 'Alchemist'],
-  lead: 'Yogesh Patil. DevOps & Site Reliability Engineer: I design infrastructure that stays calm under load.',
+  name: 'Yogesh Patil',
+  kicker: 'YogX — X · Stability',
+  lead: 'DevOps & Site Reliability Engineer: I design infrastructure that stays calm under load.',
   alchemistLead: '…and on the other plane, I turn automation, tooling and systems into craft.',
   fleetCount: '100+',
   savingsPct: 75,
@@ -46,6 +48,14 @@ export const manifesto = {
     ['I BELIEVE IN BORING', 'infrastructure and', 'BOLD DESIGN.'],
   ] as const,
 };
+
+/**
+ * Scroll lengths (vh) that give each scene room (Robo phase 2, owner review 2026-10-17: "give some time"). Every scene
+ * with a story is pinned for `extra` vh, and its story only runs inside that pin: after the doors before it are fully
+ * open, before the next ones start closing. `door` is each blast-door zone's height (was 100: slower doors).
+ * One place to tune; every 10vh added to a scene is 10vh more page.
+ */
+export const sceneLengths = { door: 115, cc: 220, hb: 50, ecs: 70, ocd: 60, log: 40, tx: 40 } as const;
 
 export type DoorZoneData = { sector: string; name: string; bg: 'paper' | 'night' | 'apri' };
 export const doorZones = {
@@ -92,10 +102,10 @@ export const ccRows = [
   { ticket: 'YX-0426', file: 'changelog.md', kind: 'warn', label: '! TYPO' },
   { ticket: 'YX-0431', file: 'table not found', kind: 'fail', label: '✕ FAIL' },
 ] as const;
-/** Robo's backstory, one source in robo-script.ts; the first sentence of the lines that have two is the bold part. */
-// line 2 has its first sentence in bold: split from the script itself, so the two never drift apart
+/** CommandCenter Robo's lines: the line he says once he is out of the app window, then his backstory (one source in
+ *  robo-script.ts); line 2 of the backstory has its first sentence in bold, split from the script so the two never drift. */
 const boldFirst = (l: string): Seg[] => { const k = l.indexOf('. ') + 1; return [{ t: l.slice(0, k), b: true }, { t: l.slice(k) }]; };
-export const roboLines: Seg[][] = CC_BACKSTORY.map((l, i) => (i === 1 ? boldFirst(l) : [{ t: l }]));
+export const roboLines: Seg[][] = [[{ t: CC_OUT_LINE }], ...CC_BACKSTORY.map((l, i) => (i === 1 ? boldFirst(l) : [{ t: l }]))];
 export const ocd = { ticket: 'YX-0412', file: 'changelog.md', logs: ['build #812 ✓  image pushed', 'tests 214/214 ✓', 'deployed to sandbox ✓  smoke ok', 'PROD ✓  rollout complete · 0 manual steps'] };
 export const heartbeat = { monitor: 'HEARTBEAT · LIVE', services: ['auth', 'agent-cud', 'codegen', 'gateway', 'ledger', 'notify'] };
 
@@ -115,8 +125,15 @@ export const missionLog = {
   ] as LogRow[],
 };
 // Only TX-01 is a confirmed title (its URL is still pending, so it is not a link yet); the others stay "INCOMING…" until the owner confirms them.
+// self-aware footnotes for the asterisk after the hero headline: one per visit at random, a click cycles (owner, 2026-10-17)
+export const heroFootnotes = [
+  '*Ships infrastructure for a living. Builds websites to relax. Imagine if he actually tried.',
+  '*Infra by day, pixels by night. Somebody had to make DevOps look good.',
+  '*Built by the guy who keeps your deploys green. Yes, he did the CSS too.',
+] as const;
 export const transmissions = {
   title: ['Field ', 'transmissions.'] as const, kicker: '06 / Writing from beneath the abstraction',
+  footnote: '*A DevOps engineer built this. Frontend folks, no pressure.',
   rows: [
     { fq: 'TX-01 · AWS LAMBDA', pre: 'Rust and C walk into a Lambda: ', em: 'custom runtimes', post: ' for the impatient.', go: 'LINK SOON', href: null as string | null, soon: false },
     { fq: 'TX-02 · TERRAFORM', pre: 'Writing your own ', em: 'Terraform provider', post: ', from zero.', go: 'INCOMING…', href: null as string | null, soon: true },

@@ -7,8 +7,11 @@
 .blobLayer[data-letters-loose]>*{opacity:0} /* thrown letters: the painted plane would show the wrong headline, so the blob steps aside */
 .blobLayer,.blobLayer *{pointer-events:none !important} /* the R3F canvas wrapper re-enables them and would swallow hovers over the panels below; the blob driver listens on the hero, not here */
 .plane{position:absolute;inset:0;padding:9vh 5vw;display:flex;flex-direction:column}
-.top{display:flex;justify-content:space-between;color:var(--muted)}
-.big{white-space:nowrap;margin-top:auto;font-weight:900;font-size:clamp(64px,13.5vw,240px);line-height:.82;letter-spacing:-.055em;text-transform:uppercase}
+.sig{margin-top:auto;display:flex;align-items:center;gap:18px;margin-bottom:clamp(10px,1.6vh,20px);padding-left:.06em;color:var(--ink)}
+.name{font-size:clamp(30px,3.1vw,58px);line-height:1;letter-spacing:-.01em;white-space:nowrap}
+.rule{flex:0 1 72px;min-width:24px;height:1px;background:currentColor;opacity:.35;align-self:center}
+.kick{font-size:9.5px;letter-spacing:.22em;color:var(--muted);white-space:nowrap;opacity:.8}
+.big{white-space:nowrap;font-weight:900;font-size:clamp(64px,13.5vw,240px);line-height:.82;letter-spacing:-.055em;text-transform:uppercase}
 .big:focus{outline:none}.big:focus-visible{outline:2px solid var(--rust);outline-offset:10px;border-radius:2px}
 .big b{color:var(--rust);font-weight:900}
 .seg{display:inline-grid}
@@ -16,8 +19,14 @@
 .alch{visibility:hidden}
 .base{display:inline-block;width:0;height:0} /* zero-size probe: its top edge is the exact text baseline, read by the blob painter */
 .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:4vh;color:var(--muted)}
+/* footnote mark: zero width so the headline box (and the blob painter's measurements) stay exactly as they were */
+.ast{display:inline-block;width:0;font-family:var(--font-serif),serif;font-style:italic;font-weight:400;font-size:.3em;vertical-align:top;line-height:1;letter-spacing:0;color:var(--muted);transform:translate(.08em,.1em)}
+.foot .note{margin-top:8px;font-size:13px;line-height:1.4}
+@media (max-width:760px){.foot .note{max-width:calc(100% - 120px)}} /* phone: stay clear of the Dial, bottom-right */
+.noteBtn{all:unset;cursor:pointer;font-family:var(--font-serif),serif;font-style:italic;color:var(--muted);opacity:.85;transition:opacity .25s}
+.noteBtn:hover{opacity:1}.noteBtn:focus-visible{opacity:1;outline:2px solid var(--rust);outline-offset:3px}
 .foot p{font-family:var(--font-grotesk),sans-serif;font-size:15px;line-height:1.5;max-width:380px;text-transform:none;letter-spacing:0;font-weight:400}
 @media (max-width:760px){.foot{flex-direction:column;align-items:flex-start;gap:10px}}
-.hint{position:absolute;left:50%;bottom:5.5vh;transform:translateX(-50%);color:var(--muted);z-index:4;pointer-events:none}
-@media (max-width:760px){.plane{padding:12vh 6vw 9vh}.big{font-size:15.5vw}}
+.hint{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);color:var(--muted);z-index:4;pointer-events:none;font-size:9px;letter-spacing:.24em;opacity:.55} /* tertiary status, not a control: no frame, dim */
+@media (max-width:760px){.plane{padding:12vh 6vw 9vh}.big{font-size:15.5vw}.sig{gap:12px}.kick{display:none}.hint{display:none}} /* phone: the keys own the bottom row and the Dial is in view */
 :global(html.night) .portal{background:var(--abyss)}

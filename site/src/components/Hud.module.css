@@ -12,16 +12,31 @@
 .mk{position:absolute;left:18px;transform:translateY(-50%);font:600 9px var(--font-mono),monospace;letter-spacing:.14em;white-space:nowrap}
 .xh{position:fixed;left:0;top:0;pointer-events:none;z-index:59;background:var(--ink);opacity:.09}
 .v{width:1px;height:100vh}.h{height:1px;width:100vw}
-/* quiet tertiary shortcut for hiring people: bottom row, dim until hovered or focused */
+/* the two things you can click, top-right on the grid line: framed mission-control keys (corner brackets like the
+   instrument panels, a status LED, the arrow nudges on hover). Nothing that is only a label shares their row. */
 .quiet{z-index:61}
-.links{position:absolute;left:calc(50% + 170px);bottom:10px;display:flex;align-items:center;gap:22px;pointer-events:none}
-.fast{pointer-events:auto;font:600 9.5px var(--font-mono),monospace;letter-spacing:.22em;text-transform:uppercase;color:inherit;text-decoration:none;opacity:.6;padding:4px 2px;border-bottom:1px solid transparent;transition:opacity .25s,border-color .25s}
-.deploy{background:none;border-top:0;border-left:0;border-right:0;cursor:pointer}
-.fast:hover,.fast:focus-visible{opacity:1;border-bottom-color:currentColor}
-.fast:focus-visible{outline:2px solid var(--rust);outline-offset:4px}
-/* narrower than 1400px the Dial's label would collide: stack the links above the cursor readout, bottom-left */
-@media (max-width:1400px){.links{left:20px;bottom:34px;flex-direction:column;align-items:flex-start;gap:4px}}
-@media (max-width:760px){.links{bottom:8px;flex-direction:row;gap:18px}}
+.links{position:absolute;right:14px;top:8px;display:flex;align-items:center;gap:10px;pointer-events:none}
+.key{pointer-events:auto;position:relative;display:inline-flex;align-items:center;gap:9px;padding:8px 13px 8px 11px;font:600 9.5px var(--font-mono),monospace;letter-spacing:.22em;text-transform:uppercase;color:inherit;text-decoration:none;cursor:pointer;
+  background:color-mix(in srgb,currentColor 5%,transparent);backdrop-filter:blur(6px);border:1px solid color-mix(in srgb,currentColor 28%,transparent);transition:background .25s,border-color .25s}
+.key::before,.key::after{content:"";position:absolute;width:7px;height:7px;border:solid currentColor;transition:width .25s,height .25s}
+.key::before{left:-1px;top:-1px;border-width:1.5px 0 0 1.5px}.key::after{right:-1px;bottom:-1px;border-width:0 1.5px 1.5px 0}
+.led{width:6px;height:6px;border-radius:50%;background:var(--apricot);box-shadow:0 0 6px var(--apricot);flex:none}
+.deploy .led{background:var(--rust);box-shadow:none}
+.arw{display:inline-block;transition:transform .25s var(--ease)}
+.key:hover,.key:focus-visible{background:color-mix(in srgb,currentColor 12%,transparent);border-color:currentColor}
+.key:hover::before,.key:hover::after,.key:focus-visible::before,.key:focus-visible::after{width:calc(100% + 2px);height:calc(100% + 2px)}
+.key:hover .arw,.key:focus-visible .arw{transform:translate(3px,0)}.deploy:hover .arw,.deploy:focus-visible .arw{transform:translate(2px,-2px)}
+.key:focus-visible{outline:2px solid var(--rust);outline-offset:4px}
+/* tertiary labels: faint and small; on the first screen the system readout and chapter name step out entirely */
+.tag{opacity:.45;font-size:8.5px}
+.sys{transition:opacity .4s}
+.hud[data-at-hero] .sys,.hud[data-at-hero] .ch{opacity:0}
+.ch{transition:opacity .4s}
+.ondemand{opacity:0;transition:opacity .5s}
+.hud[data-active] .ondemand{opacity:1}
+/* clock: IST right-aligned and UTC left-aligned around the centred switch pair (78 px wide + 13 px air each side) */
+.clock{top:30px}.ist{right:calc(50% + 52px)}.utc{left:calc(50% + 52px)}
+@media (max-width:760px){.links{right:auto;left:6px;top:auto;bottom:6px;gap:12px}.key{padding:6px 10px 6px 8px}}
 @media (max-width:760px){.t{display:none}.t.keep{display:block}.ruler,.xh{display:none}}
 @media (hover:none){.xh{display:none}}
 @media (prefers-reduced-motion: reduce){.hud{transition:none}}

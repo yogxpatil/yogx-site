@@ -15,6 +15,7 @@ import { crosses, gaitFor, margins, pickPerch, route, travelMs, type Perch, type
 import { onRobo, emitRobo } from '@/lib/robo/bus';
 import { gagMood, type Mood } from '@/lib/robo/moods';
 import { RoboChibi } from './RoboChibi';
+import { sceneRoboOnScreen } from '@/lib/missions/actor';
 import { goFastLane } from '@/lib/fastLane';
 import { useRoboSignals } from './useRoboSignals';
 import { cancelFrame, nextFrame } from '@/lib/frame';
@@ -578,11 +579,19 @@ export function RoboGuide() {
     return () => { document.removeEventListener('visibilitychange', vis); mq?.removeEventListener?.('change', small); };
   }, []);
 
-  // CommandCenter handoff: while #sc-cc holds the middle of the screen, the guide steps aside.
+  // Scene Robo handoff: while a scene's own Robo (inside an actor zone) is on screen, the guide steps aside, so there is
+  // one Robo on screen at a time. Zones off screen are skipped before any layout read of their Robo.
   useScrollFrame(() => {
-    const el = document.getElementById('sc-cc');
-    let a = false;
-    if (el) { const r = el.getBoundingClientRect(), mid = innerHeight * 0.5; a = r.top < mid && r.bottom > mid; }
+    const bots: DOMRect[] = [];
+    document.querySelectorAll('[data-actor-zone]').forEach((z) => {
+      const r = z.getBoundingClientRect(); if (r.bottom <= 0 || r.top >= innerHeight) return;
+      // the scene Robo's resting node (data-at = x,y,size in his box): where he is or is hopping to
+      z.querySelectorAll<HTMLElement>('[data-scene-actor][data-at]').forEach((a) => {
+        const [x, y, sz] = a.dataset.at!.split(',').map(Number), B = a.getBoundingClientRect(), half = sz * 0.4;
+        bots.push({ left: B.left + x - half, right: B.left + x + half, top: B.top + y - sz * 0.9, bottom: B.top + y } as DOMRect);
+      });
+    });
+    const a = sceneRoboOnScreen(bots, innerWidth, innerHeight);
     if (a !== awayRef.current) { awayRef.current = a; setAway(a); if (a) ctl.current?.end(); }
     ctl.current?.scrolled(scrollY);
   });

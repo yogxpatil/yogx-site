@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { canUseWebGL } from '@/lib/blob/webgl';
-import { createBlobGl } from '@/components/hero/blobGl';
+import { createBlobGl, drawable } from '@/components/hero/blobGl';
+import { fragment } from '@/components/hero/blobShader';
 
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
@@ -61,5 +62,34 @@ describe('blobGl (the hero blob on plain WebGL2, drawn the way three drew it)', 
     const order = f.calls.map(([k]) => k);
     expect(order.lastIndexOf('clear')).toBeLessThan(order.lastIndexOf('drawArrays'));
     expect(f.of('uniform2f')).toContainEqual([{}, 800, 450]);
+  });
+
+  // the orange flash at the intro handoff: an unpositioned frame painted the whole Alchemist plane full screen
+  it('drawable: only a measured stage with a real radius is drawn', () => {
+    expect(drawable({ balls: [], res: [1, 1] })).toBe(false);                    // the old warm-up frame
+    expect(drawable({ balls: [[0, 0, 0]], res: [1440, 900] })).toBe(false);       // radius not set yet
+    expect(drawable({ balls: [[700, 400, 120]], res: [1, 1] })).toBe(false);      // stage not measured yet
+    expect(drawable({ balls: [[700, 400, 120]], res: [1440, 900] })).toBe(true);
+  });
+  it('an unpositioned frame only clears to transparent (no draw call)', () => {
+    const f = fakeGl();
+    HTMLCanvasElement.prototype.getContext = vi.fn(() => f.gl) as never;
+    const g = createBlobGl(document.createElement('canvas'))!;
+    g.draw({ balls: [], astro: [0, 0, 0], res: [1, 1], time: 0 });
+    g.draw({ balls: [[0, 0, 0]], astro: [0, 0, 0], res: [1440, 900], time: 0 });
+    expect(f.of('drawArrays')).toHaveLength(0);
+    expect(f.of('clear').length).toBeGreaterThanOrEqual(2);
+  });
+  it('warm-up draws once to compile the pipeline, then clears: nothing of it stays on the canvas', () => {
+    const f = fakeGl();
+    HTMLCanvasElement.prototype.getContext = vi.fn(() => f.gl) as never;
+    const g = createBlobGl(document.createElement('canvas'))!;
+    g.warm();
+    const order = f.calls.map(([k]) => k);
+    expect(f.of('drawArrays')).toHaveLength(1);
+    expect(order.lastIndexOf('clear')).toBeGreaterThan(order.lastIndexOf('drawArrays'));
+  });
+  it('the shader outputs transparent while the main ball has no radius', () => {
+    expect(fragment).toMatch(/if \(uBalls\[0\]\.z <= 0\.0\) \{ gl_FragColor = vec4\(0\.0\); return; \}/);
   });
 });

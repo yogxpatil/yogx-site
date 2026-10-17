@@ -44,7 +44,10 @@ const box = (s: Side, key: string, i = 0) => s.page.evaluate(([sel, i]) => { con
 const close = (a: number[], b: number[], tol: number, label = '') => { dbg('PARITY', label, 'real', a.map((v) => +v.toFixed(2)).join(','), 'proto', b.map((v) => +v.toFixed(2)).join(',')); a.forEach((v, i) => expect(Math.abs(v - b[i]), `index ${i}: ${v} vs ${b[i]}`).toBeLessThanOrEqual(tol * Math.max(1, Math.abs(b[i])))); };
 
 test.describe.configure({ mode: 'serial' });
-test('@parity real site matches home-v5 at the same scroll positions', async ({ browser }) => {
+// Retired 2026-10-17: the owner approved a redesign that intentionally leaves the home-v5 prototype — name line above the
+// headline, panel rack, longer pinned scenes and slower doors that start at 30% — so scroll positions and door transforms no
+// longer line up with it. Kept for reference; the new behaviour is covered by the transition, robo and hero specs.
+test.skip('@parity real site matches home-v5 at the same scroll positions', async ({ browser }) => {
   test.setTimeout(120_000);
   const pp = await browser.newPage({ viewport: { width: 1600, height: 900 } });
   const rp = await browser.newPage({ viewport: { width: 1600, height: 900 } });
@@ -52,13 +55,20 @@ test('@parity real site matches home-v5 at the same scroll positions', async ({ 
   await open(pp, PROTO, '#enter');
   await open(rp, `http://localhost:${process.env.PW_PORT || 3100}/`, null); // the server playwright started (PW_PORT), never a hard-coded preview
 
-  // 1 · hero: headline, O, the four panels
-  close(await box(real, 'h1'), await box(proto, 'h1'), 0.01, 'h1');
-  close(await box(real, 'o'), await box(proto, 'o'), 0.02, 'O');
-  for (let i = 0; i < 4; i++) {
-    const a = await box(real, 'panels', i), b = await box(proto, 'panels', i); close(a, b, 0.01, 'panel' + i);
-    a.forEach((v, k) => expect(Math.abs(v - b[k]), 'panel ' + i + ' index ' + k).toBeLessThanOrEqual(2));   // pinned: within 2 px
-  }
+  // 1 · hero: headline, O. The four panels intentionally left the prototype's spots (2026-10-17: one rack that never
+  // touches the headline), so they are checked for that instead of for position.
+  // The hero now leads with the name line above DEVOPS ARCHITECT (owner, 2026-10-17), which moves the headline up:
+  // its vertical spot intentionally differs from the prototype, so compare left edge and width only.
+  { const [rx, , rw] = await box(real, 'h1'), [px, , pw] = await box(proto, 'h1');
+    close([rx, rw], [px, pw], 0.01, 'h1'); }
+  { const [ox, , ow, oh] = await box(real, 'o'), [qx, , qw, qh] = await box(proto, 'o');
+    close([ox, ow, oh], [qx, qw, qh], 0.02, 'O'); } // same vertical shift as the headline
+  const panelHits = await rp.evaluate(() => {
+    const letters = [...document.querySelectorAll('h1 [data-letter]')].map((e) => e.getBoundingClientRect());
+    return [...document.querySelectorAll('[data-panel]')].map((p) => p.getBoundingClientRect())
+      .filter((p) => letters.some((l) => l.left < p.right && l.right > p.left && l.top < p.bottom && l.bottom > p.top)).length;
+  });
+  expect(panelHits, 'panels overlapping headline letters').toBe(0);
   // blob radius after hovering the same point, once it has stopped changing for ~0.6 s
   const readR = (s: Side, sel: string, attr: string) => s.page.evaluate(([sel, attr]) => Number(document.querySelector(sel)!.getAttribute(attr)), [sel, attr] as const);
   const settledR = async (s: Side, sel: string, attr: string) => {

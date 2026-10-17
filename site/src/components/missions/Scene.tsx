@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { Mission } from '@/content/site';
-import { sceneProgress } from '@/lib/missions/progress';
+import { pinnedProgress, sceneProgress } from '@/lib/missions/progress';
 import { useScrollFrame } from '@/lib/useScrollFrame';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { Patch } from './Patch';
@@ -43,8 +43,17 @@ export function useSceneProgress(onChange: (p: number) => void): void {
  * the screen or unmounting stops everything and re-entering restarts cleanly); under reduced motion, apply the final
  * static state on the first effect run once `active` is true and do no looping work.
  */
-export function Scene({ mission: m, overlay, stage }: { mission: Mission; overlay?: React.ReactNode; stage: React.ReactNode }) {
-  const ref = useRef<HTMLElement>(null);
+export function Scene({ mission: m, overlay, stage, actor, extra = 0 }: {
+  mission: Mission; overlay?: React.ReactNode; stage: React.ReactNode;
+  /** the stage has its own Robo: the guide steps aside while this scene holds the middle of the screen */
+  actor?: boolean;
+  /** pinned scene: this many vh of extra scroll while the scene sticks (desktop) or its stage sticks (phone). Progress
+   *  runs over the pinned stretch only (pinnedProgress): it starts once the scene's top reaches the screen top, which is
+   *  exactly when the blast doors before it are fully open, and ends before the scene starts to leave (and so before
+   *  the next doors start closing). Nothing in the story moves while doors are moving. */
+  extra?: number;
+}) {
+  const ref = useRef<HTMLElement>(null), cell = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
   const [inView, setInView] = useState(false);
   const reduce = useReducedMotion();
@@ -62,14 +71,24 @@ export function Scene({ mission: m, overlay, stage }: { mission: Mission; overla
     setInView(v); // React skips the re-render when the value is unchanged
     if (v) setActive(true);
     // Only while near the screen: far away it would just recompute the same 0 or 1. Rounded so sub-pixel jitter is no change.
-    if (r && r.bottom > -innerHeight && r.top < innerHeight * 2) src.set(Math.round(sceneProgress(r.top, r.height, innerHeight) * 1000) / 1000);
+    if (!r || r.bottom <= -innerHeight || r.top >= innerHeight * 2) return;
+    let p: number;
+    if (extra) {
+      // desktop: the whole scene pins at its own top; phone (stacked): the stage pins inside its cell, so measure the cell
+      const phone = innerWidth <= 760, top = phone ? (cell.current?.getBoundingClientRect().top ?? r.top) : r.top;
+      p = pinnedProgress(top, (extra / 100) * innerHeight);
+    } else p = sceneProgress(r.top, r.height, innerHeight);
+    src.set(Math.round(p * 1000) / 1000);
   }, ref);
   return (
     <SceneProgress.Provider value={src}>
     <SceneActive.Provider value={active}>
       <SceneInView.Provider value={inView}>
         <article ref={ref} id={m.id} data-scene data-in={active} data-view={inView} data-tone={m.tone === 'light' ? undefined : m.tone} aria-label={`Mission ${m.code}: ${m.scene}`}
+          data-actor-zone={actor ? '' : undefined} data-tall={extra ? '' : undefined}
+          style={extra ? ({ '--extra': `${extra}vh` } as React.CSSProperties) : undefined}
           className={`${s.scene} ${s[m.tone]} ${m.sweep ? s.sweep : ''} ${active ? s.in : ''}`}>
+          <div className={s.pin}>
           {overlay}
           <div>
             <Patch code={m.code} name={m.patchName} />
@@ -78,7 +97,8 @@ export function Scene({ mission: m, overlay, stage }: { mission: Mission; overla
             <p>{m.body}</p>
             <dl className={`mono ${s.facts}`}>{m.facts.map(([b, t]) => <div key={t}><dt>{t}</dt><dd><b>{b}</b></dd></div>)}</dl>
           </div>
-          <div className={s.stage}>{stage}</div>
+          <div ref={cell} className={s.cell}><div className={s.stage}>{stage}</div></div>
+          </div>
         </article>
       </SceneInView.Provider>
     </SceneActive.Provider>

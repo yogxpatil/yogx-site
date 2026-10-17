@@ -10,11 +10,15 @@ import { zoneValue, pickDoor, doorShift, isShut, meterLit, sectorDigits, lockTex
 
 describe('door zone maths (proto lines 982-983)', () => {
   it('is null until the zone enters the screen', () => { expect(zoneValue(1000, 1000, 1000)).toBeNull(); expect(zoneValue(-1000, 1000, 1000)).toBeNull(); });
-  it('closes over the first 40%, holds shut, opens over the last 40%', () => {
-    expect(zoneValue(600, 1000, 1000)!.pos).toBeCloseTo(0.5);
-    expect(zoneValue(200, 1000, 1000)).toEqual({ pos: 1, unlocked: false });
-    expect(zoneValue(-200, 1000, 1000)).toEqual({ pos: 1, unlocked: true });
-    expect(zoneValue(-600, 1000, 1000)!.pos).toBeCloseTo(0.5);
+  it('stays open until the zone top is 30% down the screen, then closes over 40%, holds shut, opens over the last 40%', () => {
+    // p = (0.3·vh − top) / (height + 0.3·vh): here (300 − top) / 1300
+    expect(zoneValue(600, 1000, 1000)!.pos).toBe(0); // the zone is on screen but the section above is still being read
+    expect(zoneValue(300, 1000, 1000)!.pos).toBe(0);
+    expect(zoneValue(40, 1000, 1000)!.pos).toBeCloseTo(0.5);
+    expect(zoneValue(-250, 1000, 1000)).toEqual({ pos: 1, unlocked: false });
+    expect(zoneValue(-400, 1000, 1000)).toEqual({ pos: 1, unlocked: true });
+    expect(zoneValue(-740, 1000, 1000)!.pos).toBeCloseTo(0.5);
+    expect(zoneValue(-1000, 1000, 1000)).toBeNull(); // fully open as the next section's top reaches the screen top
   });
   it('the most closed zone wins and brings its label', () => {
     const r = pickDoor([{ v: { pos: 0.3, unlocked: false }, label: 'a' }, { v: null, label: 'b' }, { v: { pos: 0.9, unlocked: true }, label: 'c' }]);

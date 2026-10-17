@@ -105,7 +105,7 @@ test('portal: scrolling flies into the O and never leaves a blank screen', async
 
 test('doors: scrolling into a zone seals them, keys jump behind them and reopen', async ({ page }) => {
   await enter(page);
-  await page.evaluate(() => { const z = document.querySelector<HTMLElement>('[data-door-zone][data-sector="03"]')!; scrollTo(0, z.offsetTop - innerHeight * 0.2); });
+  await page.evaluate(() => { const z = document.querySelector<HTMLElement>('[data-door-zone][data-sector="03"]')!; scrollTo(0, z.offsetTop + innerHeight * 0.3); }); // doors close only once the zone top is 30% up the screen
   await expect(page.locator('[data-lock]')).toHaveText('⛒ SEALED');
   await expect.poll(() => page.evaluate(() => getComputedStyle(document.querySelector('[data-lock]')!).opacity)).toBe('1');
   await page.keyboard.press('3'); await page.keyboard.press('5'); // the 5 lands while the doors are busy and is refused
@@ -122,7 +122,7 @@ test('OCD scene: the ticket rides the pipeline with the scroll, and back', async
   await sceneAt(page, 'sc-ocd', 0.6);
   await expect(page.locator('#sc-ocd')).toHaveAttribute('data-in', 'true');
   await expect.poll(lit).toBe(0);
-  await sceneAt(page, 'sc-ocd', -0.3);
+  await sceneAt(page, 'sc-ocd', -0.6); // end of the pinned stretch
   await expect(page.locator('#sc-ocd').getByText('→ build #812')).toBeVisible();
   await expect.poll(lit).toBe(4);
   await sceneAt(page, 'sc-ocd', 0.6); // scroll back up: the ticket goes back to the start
@@ -134,7 +134,7 @@ test('CC-01: Robo fixes the rows and stamps VERIFIED as you scroll, and un-fixes
   await enter(page);
   await sceneAt(page, 'sc-cc', 0.9);
   await expect(page.locator('[data-stamp]')).toHaveAttribute('data-on', 'false');
-  await sceneAt(page, 'sc-cc', -0.35);
+  await sceneAt(page, 'sc-cc', -1.3); // pinned scene: the stamp comes late in the pinned stretch
   await expect(page.locator('[data-stamp]')).toHaveAttribute('data-on', 'true');
   await expect(page.locator('[data-cc-status]')).toHaveText(Array(6).fill('✓ PASS'));
   await sceneAt(page, 'sc-cc', 0.6); // back up: the stamp lifts and the rows fail again
@@ -148,7 +148,7 @@ test('HB-02: ECG leaves the monitor, the monitor flatlines then recovers as you 
   await sceneAt(page, 'sc-hb', 0.6);
   await expect(path).toHaveAttribute('d', /^M[\d.]+ [\d.]+ L/);
   const flat = new Set<string>();
-  for (let i = 0; i <= 40; i++) { await sceneAt(page, 'sc-hb', 0.7 - i * 0.025); await page.waitForTimeout(60); flat.add((await page.locator('#sc-hb [data-monitor]').getAttribute('data-flat')) ?? ''); }
+  for (let i = 0; i <= 48; i++) { await sceneAt(page, 'sc-hb', 0.7 - i * 0.025); await page.waitForTimeout(60); flat.add((await page.locator('#sc-hb [data-monitor]').getAttribute('data-flat')) ?? ''); }
   expect([...flat].sort()).toEqual(['false', 'true']); // flatlined at some point on the way down
   await expect(page.locator('#sc-hb [data-bpm]')).toHaveText(/\d+ bpm/); // and recovered by the end
   await expect(path).toHaveCSS('stroke-dashoffset', '0px');
@@ -162,7 +162,7 @@ test('ECS-03: tiles flip away on scroll, boxes pack into three containers and re
   await expect(page.locator('[data-tile]')).toHaveCount(84);
   await sceneAt(page, 'sc-ecs', 0);
   await expect.poll(() => page.evaluate(() => [...document.querySelectorAll('[data-tile]')].filter((t) => (t as HTMLElement).style.opacity === '0').length), { timeout: 10_000 }).toBeGreaterThan(70);
-  await sceneAt(page, 'sc-ecs', -0.3);
+  await sceneAt(page, 'sc-ecs', -0.7); // end of the pinned stretch
   await expect(page.locator('#sc-ecs [data-ecs]')).toHaveAttribute('data-packed', 'true');
   await expect(page.locator('#sc-ecs [data-box]').first()).toHaveText('ECS');
   await expect(page.locator('#sc-ecs [data-ctr]')).toHaveCount(3);

@@ -170,3 +170,14 @@
 .root[data-reduce='true'] .pop{opacity:0}
 /* lite tier (weak device): idle Robo stands still (the screen's own loop is the one that plays); he still walks, waves, reacts */
 :global(html[data-tier='lite']) .root[data-mood='idle'] .head{animation:none}
+
+/* ---- scene Robo (phase 2) ---- */
+/* air: mid-hop, arms up, legs tucked (the arc and the squash are transforms on his wrapper) */
+.root[data-mood='air'] .la{transform:rotate(150deg)}
+.root[data-mood='air'] .ra{transform:rotate(-150deg)}
+.root[data-mood='air'] .ll{transform:rotate(-25deg) translateY(-2px)}
+.root[data-mood='air'] .rl{transform:rotate(20deg) translateY(-2px)}
+.root[data-mood='air'] .ant{transform:rotate(-18deg)}
+/* scrub: the walk cycle is posed by scroll (--step = steps travelled), not by the clock: stop scrolling, he stops mid-step */
+.root[data-scrub='true']{--g:1s}
+.root[data-scrub='true'][data-mood='walk'] :is(.all,.head,.ant,.ll,.rl,.la,.ra,.shadow){animation-play-state:paused;animation-delay:calc(var(--step,0) * -1s)}

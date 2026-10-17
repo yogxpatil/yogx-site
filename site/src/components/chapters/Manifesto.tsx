@@ -5,6 +5,8 @@ import { manifestoState, quoteSizeVw } from '@/lib/chapters/tunnel';
 import { sectionProgress } from '@/lib/scroll';
 import { useScrollFrame } from '@/lib/useScrollFrame';
 import { useReducedMotion } from '@/lib/useReducedMotion';
+import { CHAPTER_LINES } from '@/content/robo-script';
+import { PerchRobo, type PerchHandle } from '@/components/robo/PerchRobo';
 import s from './Manifesto.module.css';
 
 const N = manifesto.quotes.length;
@@ -14,11 +16,12 @@ const SIZES = manifesto.quotes.map((q) => quoteSizeVw([q[0], q[2]]));
 export function Manifesto() {
   const sec = useRef<HTMLElement>(null), count = useRef<HTMLSpanElement>(null);
   const qs = useRef<(HTMLLIElement | null)[]>([]);
-  const last = useRef('');
+  const last = useRef(''), robo = useRef<PerchHandle>(null);
   const reduce = useReducedMotion();
   useScrollFrame(() => {
     const el = sec.current; if (!el) return;
-    const r = el.getBoundingClientRect(), st = manifestoState(sectionProgress(r.top, r.height, innerHeight), N, reduce);
+    const r = el.getBoundingClientRect(), sp = sectionProgress(r.top, r.height, innerHeight), st = manifestoState(sp, N, reduce);
+    robo.current?.update(reduce ? 1 : sp); // his note on the quotes, in its own scroll range
     const key = `${st.active}|${st.quotes.map((q) => `${q.opacity.toFixed(3)}${q.t1}${q.t2Opacity.toFixed(3)}`).join('|')}`;
     if (key === last.current) return;
     last.current = key;
@@ -33,7 +36,7 @@ export function Manifesto() {
   }, sec);
   return (
     // auto tone: the HUD frame follows the day/night breaker here
-    <section ref={sec} id="c2" data-tone="auto" className={s.tunnel} aria-label="Manifesto">
+    <section ref={sec} id="c2" data-tone="auto" data-actor-zone="" className={s.tunnel} aria-label="Manifesto">
       <div className={s.sticky}>
         <span className={`mono ${s.label}`}>{manifesto.label}</span>
         <span ref={count} className={`mono ${s.count}`} aria-hidden>{`${pad(1)} / ${pad(N)}`}</span>
@@ -47,6 +50,7 @@ export function Manifesto() {
             </li>
           ))}
         </ol>
+        <PerchRobo ref={robo} name="manifesto" line={CHAPTER_LINES.c2 ?? ''} at={{ x: 0.1, y: 0.9 }} from={0.06} />
       </div>
     </section>
   );

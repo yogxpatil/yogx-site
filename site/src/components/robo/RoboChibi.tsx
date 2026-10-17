@@ -9,7 +9,7 @@ export type { Mood };
 type Eyes = 'calm' | 'happy' | 'angry' | 'sad' | 'dizzy';
 const EYES: Record<Mood, Eyes> = {
   idle: 'calm', walk: 'calm', run: 'calm', point: 'calm', jump: 'happy', namaste: 'happy', wave: 'happy', sit: 'happy',
-  angry: 'angry', sad: 'sad', sadWalk: 'sad', dizzy: 'dizzy',
+  air: 'happy', angry: 'angry', sad: 'sad', sadWalk: 'sad', dizzy: 'dizzy',
 };
 
 const VIEW_W = 76, VIEW_H = 92;
@@ -42,6 +42,8 @@ export type RoboChibiProps = {
   /** bump to throw a small burst of apricot sparks over the head */
   sparks?: number;
   className?: string;
+  /** scene Robo: the walk cycle is paused and posed by the --step CSS variable (steps travelled), so legs match travel */
+  scrub?: boolean;
 };
 
 /**
@@ -49,7 +51,7 @@ export type RoboChibiProps = {
  * The arms are drawn after the head so raised hands (namaste, wave, point) stay in front of it.
  * Blinks about every 3 s while calm. Reduced motion: no animation, a static pose per mood (data-reduce).
  */
-export const RoboChibi = memo(function RoboChibi({ mood, facing, gait, size = 78, sparks = 0, className }: RoboChibiProps) {
+export const RoboChibi = memo(function RoboChibi({ mood, facing, gait, size = 78, sparks = 0, className, scrub }: RoboChibiProps) {
   const reduce = useReducedMotion();
   const [blink, setBlink] = useState(false);
   const calm = EYES[mood] === 'calm';
@@ -72,8 +74,9 @@ export const RoboChibi = memo(function RoboChibi({ mood, facing, gait, size = 78
       data-mood={mood}
       data-facing={facing}
       data-reduce={reduce ? 'true' : undefined}
+      data-scrub={scrub ? 'true' : undefined}
       aria-hidden="true"
-      style={{ height: size, width: (size * VIEW_W) / VIEW_H, '--g': `${gait}s` } as React.CSSProperties}
+      style={{ height: size, width: (size * VIEW_W) / VIEW_H, '--g': `${scrub ? 1 : gait}s` } as React.CSSProperties}
     >
       <div className={s.flip}>
         <svg className={s.rig} viewBox={`-6 -8 ${VIEW_W} ${VIEW_H}`}>

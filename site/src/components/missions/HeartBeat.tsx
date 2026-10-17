@@ -5,6 +5,8 @@ import { buildEcg, cumLengths, pointAt, ecgAtProgress, isFlat } from '@/lib/miss
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { sfx } from '@/lib/sound';
 import { useSceneActive, useSceneInView, useSceneProgress } from './Scene';
+import { HB_LINE } from '@/content/robo-script';
+import { PerchRobo, type PerchHandle } from '@/components/robo/PerchRobo';
 import s from './HeartBeat.module.css';
 
 const STEADY = '72 bpm';
@@ -39,7 +41,7 @@ export function EcgOverlay() {
       if (fl !== flat.current) { flat.current = fl; mon.dataset.flat = String(fl); bpm.textContent = fl ? '— flatline' : STEADY; if (!fl) sfx.beep(); }
     };
     const build = () => {
-      const R = scene.getBoundingClientRect(), m = mon.getBoundingClientRect(), h = h3.getBoundingClientRect();
+      const R = sv.getBoundingClientRect(), m = mon.getBoundingClientRect(), h = h3.getBoundingClientRect();
       sv.setAttribute('viewBox', `0 0 ${R.width} ${R.height}`);
       e = buildEcg(m.left - R.left + m.width * 0.15, m.top - R.top + m.height * 0.62, h.top - R.top + h.height * 0.42);
       cum = cumLengths(e.pts); L = cum[cum.length - 1]; p.setAttribute('d', e.d); p.style.strokeDasharray = String(L);
@@ -61,10 +63,13 @@ export function EcgOverlay() {
 }
 
 export function HeartBeatStage() {
+  const robo = useRef<PerchHandle>(null), reduce = useReducedMotion();
+  useSceneProgress((p) => robo.current?.update(reduce ? 1 : p)); // his note beside the monitor, in its own scroll range
   return (
     <>
       <div className={s.monitor} data-monitor data-flat="false">{heartbeat.monitor}<b data-bpm aria-hidden="true">{STEADY}</b></div>
       <p className="sr-only">Heartbeat monitor: steady pulse, about 72 beats per minute, across {heartbeat.services.length} services.</p>
+      <PerchRobo ref={robo} name="hb" line={HB_LINE} at={{ x: 0.12, y: 0.8 }} from={0.06} tone="cream" />
       <ul className={s.services} aria-label="Services monitored">{heartbeat.services.map((n) => <li key={n}><i aria-hidden="true" />{n}</li>)}</ul>
     </>
   );

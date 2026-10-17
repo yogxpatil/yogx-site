@@ -2,6 +2,7 @@ import { hero } from '@/content/site';
 import { segments } from '@/lib/blob/headlineSlots';
 import { Instruments } from './Instruments';
 import { BreakableHeadline } from './BreakableHeadline';
+import { HeroFootnote } from './HeroFootnote';
 import s from './Hero.module.css';
 
 // data-slot letters are the ones the blob painter re-draws on the other plane; data-base is a zero-size probe
@@ -34,13 +35,16 @@ export function Hero({ blob }: { blob: React.ReactNode }) {
   return (
     <>
       <div className={s.plane} data-hero-stage>
-        <div className={`mono ${s.top}`}><span>YOGX — X · STABILITY</span><span>01 / Two planes</span></div>
+        {/* signature lockup: his name reads first, right on top of the headline; the h1 carries it for screen readers */}
+        <div className={s.sig} data-hero-name aria-hidden>
+          <span className={`serif ${s.name}`}>{hero.name}</span><i className={s.rule} /><span className={`mono ${s.kick}`}>{hero.kicker}</span>
+        </div>
         <BreakableHeadline className={s.big}>
-          <span className="sr-only">{hero.architect.join(' ')} — and on the other plane, {hero.alchemist.join(' ')}</span>
+          <span className="sr-only">{hero.name} — {hero.architect.join(' ')} — and on the other plane, {hero.alchemist.join(' ')}</span>
           <Line page={hero.architect[0]} alch={hero.alchemist[0]} line={0} /><br />
-          <b><Line page={hero.architect[1]} alch={hero.alchemist[1]} line={1} /></b>
+          <b><Line page={hero.architect[1]} alch={hero.alchemist[1]} line={1} /><span className={s.ast} aria-hidden>*</span></b>
         </BreakableHeadline>
-        <div className={`mono ${s.foot}`}><p>{hero.lead}</p></div>
+        <div className={`mono ${s.foot}`}><div><p>{hero.lead}</p><HeroFootnote /></div></div>
         <Instruments />
       </div>
       <div className={s.blobLayer} data-blob-layer>{blob}</div>

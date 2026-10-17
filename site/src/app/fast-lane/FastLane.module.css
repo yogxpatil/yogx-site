@@ -78,6 +78,7 @@
 
 .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-top:36px}
 .robo{display:flex;align-items:center;gap:12px}
+.note{flex-basis:100%;font-size:14px;color:var(--muted);margin:0}
 .robo svg{flex:none;filter:drop-shadow(0 6px 10px color-mix(in srgb,var(--ink) 25%,transparent))}
 .line{position:relative;font-size:24px;padding:6px 16px;border:1px solid var(--ink);border-radius:14px 14px 14px 3px;background:var(--surface)}
 

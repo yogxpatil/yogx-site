@@ -20,6 +20,8 @@
 .pending{opacity:.8;cursor:default;border-bottom:1.5px dashed currentColor;padding-bottom:3px}
 .pending small{font-size:9px;letter-spacing:.18em;margin-left:4px;opacity:.8}
 .ogseal{position:absolute;right:7vw;bottom:9vh;width:120px;height:120px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--font-serif),serif;font-style:italic;font-size:46px;z-index:2;opacity:0}
+/* the finale Robo's box: the whole pinned screen, above the planes, never in the way of a click */
+.stage{position:absolute;inset:0;z-index:3;pointer-events:none}
 @media (prefers-reduced-motion: reduce){.lamp,.lamp::before,.lamp::after{animation:none}}
 @media (max-width:760px){.ogseal{width:80px;height:80px;font-size:30px}}
 .signal[data-view="false"] .lamp,.signal[data-view="false"] .lamp::before,.signal[data-view="false"] .lamp::after{animation-play-state:paused}

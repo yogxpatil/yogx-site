@@ -72,11 +72,46 @@ export const EGG_FOUND: Record<EggId, string> = {
 export const HUSH_ON = 'Theek hai… main chala jaata hoon.'
 export const HUSH_OFF = 'Wapas aa gaya!'
 
+/** CommandCenter: said once he has fixed the rows and climbed out of the app window (owner's line, 2026-10-17 review). */
+export const CC_OUT_LINE = 'Yeh accha hai… ab yahan sukoon hai.'
+
 export const CC_BACKSTORY: string[] = [
   'Main pehle CommandCenter mein kaam karta tha.',
   'Har galat changelog maine check kiya. System khud likh sakta tha, phir bhi.',
   'Phir boss impress hua, aur yahan bhi hire kar liya.',
   'Yahan sukoon hai. No tension. Bas guide karta hoon.',
+]
+
+// ---- Phase 2: scene Robo lines (scroll-tied, one per range; Claude's drafts for the owner to tune) ----
+/** HeartBeat: his one note beside the monitor. */
+export const HB_LINE = 'HeartBeat: sab services ki dhadkan ek jagah. Flatline dikhe toh main pehle bhaagta hoon.'
+/** ECS: while he carries the EC2 boxes, and once the label flips. */
+export const ECS_LINES: string[] = [
+  'Ek ek karke. Har service ko apna dabba milega.',
+  'EC2 se ECS. Same budget, crash kam. Mehnat meri, credit uska.',
+]
+/** OCD: one short line as he lands on each station (BUILD, TEST, SB, PROD). */
+export const OCD_LINES: string[] = [
+  'Build ho gaya. Image pushed.',
+  '214 tests, sab green. Main bhi check karta hoon.',
+  'Sandbox mein smoke ok. Ab asli wala.',
+  'PROD! Zero manual steps. Changelog likho, chai piyo.',
+]
+/** Mission log: one line for each entry he walks to (same order as missionLog.rows). */
+export const LOG_LINES: string[] = [
+  'Intern tha. Pehla kaam hi poori team use karti hai.',
+  'CTO ne khud chuna. Main bhi impress tha.',
+  'Poora fleet arm64 pe. Sasta bhi, tez bhi.',
+  'Ek pipeline, chhe environments. Bas ek jagah se.',
+  'HeartBeat akele banaya. CEO ne LinkedIn pe share kiya!',
+  'OCD lead kiya. Wahi jo abhi dekha.',
+  'Aur ab? Abhi bhi curious. Main witness hoon.',
+]
+/** Transmissions: one line on each post he sits on. */
+export const TX_LINES: string[] = [
+  'Rust aur C, ek Lambda mein. Raat ko likha, obviously.',
+  'Apna Terraform provider. Haan, zero se.',
+  '100 services ka right-sizing. Bill ne thank you bola.',
 ]
 
 export const FAST_LANE_LINE = 'Told you he was good.'

@@ -5,12 +5,14 @@ import { ROUTE_D, mapState, milestoneLayout } from '@/lib/chapters/route';
 import { sectionProgress } from '@/lib/scroll';
 import { useScrollFrame } from '@/lib/useScrollFrame';
 import { useReducedMotion } from '@/lib/useReducedMotion';
+import { CHAPTER_LINES } from '@/content/robo-script';
+import { PerchRobo, type PerchHandle } from '@/components/robo/PerchRobo';
 import s from './FlightPath.module.css';
 
 const LAID = flight.milestones.map((m) => ({ m, ...milestoneLayout(m) }));
 export function FlightPath() {
   const sec = useRef<HTMLElement>(null), route = useRef<SVGPathElement>(null), dot = useRef<SVGCircleElement>(null), glow = useRef<SVGCircleElement>(null), og = useRef<SVGGElement>(null);
-  const ms = useRef<(SVGGElement | null)[]>([]);
+  const ms = useRef<(SVGGElement | null)[]>([]), robo = useRef<PerchHandle>(null);
   const reduce = useReducedMotion();
   const apply = (p: number) => {
     const st = mapState(p);
@@ -20,15 +22,16 @@ export function FlightPath() {
     og.current?.setAttribute('data-on', String(st.og));
   };
   // Reduced motion: the chart is fully drawn and static, applied right away (not on first scroll).
-  useEffect(() => { if (reduce) apply(1); });
+  useEffect(() => { if (reduce) { apply(1); robo.current?.update(1); } });
   useScrollFrame(() => {
     const el = sec.current; if (!el || !route.current || reduce) return;
     const r = el.getBoundingClientRect();
-    apply(sectionProgress(r.top, r.height, innerHeight));
+    const p = sectionProgress(r.top, r.height, innerHeight);
+    apply(p); robo.current?.update(p); // his note on the route, in its own scroll range
   }, sec);
   const [t1, t2, em, t3] = flight.title;
   return (
-    <section ref={sec} id="c3" data-tone="light" className={s.map} aria-label="Flight path">
+    <section ref={sec} id="c3" data-tone="light" data-actor-zone="" className={s.map} aria-label="Flight path">
       <div className={s.sticky}>
         <div className={s.mapl}>
           <span className="mono" style={{ color: 'var(--muted)' }}>{flight.label}</span>
@@ -56,6 +59,7 @@ export function FlightPath() {
             <text x={920} y={104} textAnchor="middle" className={s.ogT}>OG</text></g>
           <circle ref={dot} data-dot r={11} cx={110} cy={560} fill="var(--ink)" /><circle ref={glow} r={22} cx={110} cy={560} fill="var(--apricot)" opacity={0.35} />
         </svg>
+        <PerchRobo ref={robo} name="flight" line={CHAPTER_LINES.c3 ?? ''} at={{ x: 0.35, y: 0.95 }} from={0.08} />
       </div>
     </section>
   );

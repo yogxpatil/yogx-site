@@ -1,0 +1,37 @@
+/* Scene Robo (phase 2): a box over the scene stage; Robo and his bubble are moved inside it by transforms only. */
+.box{position:absolute;inset:0;pointer-events:none;z-index:4}
+.bot{position:absolute;left:0;top:0;will-change:transform}
+/* inside a window on the stage (CommandCenter's app): he is clipped to it, so the window frame hides what is outside */
+.box[data-inside='true']{clip-path:var(--clip,none)}
+/* carrying a brick on his head: both arms straight up, holding it (overrides the walk's arm swing) */
+.bot[data-carry='true'] [data-part='arm']{animation:none !important;transform:rotate(180deg) !important}
+.squash{transform-origin:50% 92%;will-change:transform;filter:drop-shadow(0 14px 18px #16130840)}
+/* The bubble is a radio transmission, not a tooltip: ink slab, apricot carrier waves, a tail that points at him wherever
+   the bubble is clamped. Lines are stacked in one grid cell (height = the tallest), so a cross-fade never moves layout. */
+.bubble{position:absolute;left:0;top:0;padding:14px 18px 16px 40px;border-radius:18px 18px 18px 6px;background:var(--ink);color:var(--cream);
+  font-size:15px;line-height:1.45;opacity:0;transform-origin:50% 100%;will-change:transform,opacity;box-shadow:6px 6px 0 #16130822;
+  /* it glides after him when he hops to a new node (his own move is a short animation), never jumps */
+  transition:transform .5s cubic-bezier(.3,.7,.4,1)}
+@media (prefers-reduced-motion: reduce){.bubble{transition:none}}
+.bubble::after{content:"";position:absolute;left:calc(50% + var(--tail,0px) - 8px);bottom:-9px;width:16px;height:10px;background:inherit;clip-path:polygon(0 0,100% 0,50% 100%)}
+.box[data-tone='cream'] .bubble{background:#f2eee4;color:#1b1605}
+:global(html.night) .bubble{background:#f2eee4;color:#1b1605}
+:global(html.night) .box[data-tone='cream'] .bubble{background:#1b1605;color:#f2eee4}
+.bubble b{color:var(--apricot);font-weight:600}
+.box[data-tone='cream'] .bubble b,:global(html.night) .bubble b{color:#882700}
+:global(html.night) .box[data-tone='cream'] .bubble b{color:var(--apricot)}
+.stack{display:grid}
+.line{grid-area:1/1;opacity:0}
+.waves{position:absolute;left:14px;top:17px;display:flex;align-items:flex-end;gap:2px;height:14px}
+.waves i{display:block;width:3px;border-radius:2px;background:var(--apricot);height:40%}
+.waves i:nth-child(2){height:100%}.waves i:nth-child(3){height:65%}
+.box[data-tone='cream'] .waves i{background:#882700}
+.bubble[data-on='true'] .waves i{animation:wv 1.1s ease-in-out infinite}
+.bubble[data-on='true'] .waves i:nth-child(2){animation-delay:.18s}.bubble[data-on='true'] .waves i:nth-child(3){animation-delay:.36s}
+@keyframes wv{50%{transform:scaleY(.45)}}
+:global(html[data-tier='lite']) .waves i{animation:none !important}
+/* reduced motion: every line, readable, as a list beside him */
+.list{position:absolute;left:0;right:0;bottom:2%;margin:0;padding:14px 18px 14px 34px;background:var(--ink);color:var(--cream);border-radius:14px;font-size:14.5px;line-height:1.5;pointer-events:auto;max-width:440px}
+.list li+li{margin-top:6px}
+.box[data-tone='cream'] .list,:global(html.night) .list{background:#f2eee4;color:#1b1605}
+@media (max-width:760px){.bubble{font-size:14px;padding:12px 14px 14px 34px}}

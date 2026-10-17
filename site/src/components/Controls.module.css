@@ -1,4 +1,4 @@
-.ctrls{position:fixed;left:calc(50% + 150px);top:22px;z-index:62;display:flex;gap:10px;transition:opacity .8s}
+.ctrls{position:fixed;left:50%;transform:translateX(-50%);top:22px;z-index:62;display:flex;gap:10px;transition:opacity .8s}
 .btn{background:none;border:none;padding:0;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:5px}
 .btn:focus-visible{outline:2px solid var(--rust);outline-offset:4px}
 .house{position:relative;width:34px;height:54px;border:1.5px solid currentColor;border-radius:7px;background:var(--surface);display:grid;place-items:center}

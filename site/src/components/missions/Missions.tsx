@@ -1,4 +1,4 @@
-import { missions, missionsHead, doorZones } from '@/content/site';
+import { missions, missionsHead, doorZones, sceneLengths as L } from '@/content/site';
 import { DoorZone } from '@/components/transitions/DoorZone';
 import { Scene } from './Scene';
 import { OcdStage } from './OcdStage';
@@ -15,12 +15,12 @@ export function Missions() {
       {/* The doors already announce "Missions · sector 04", so the chapter title is a quiet label over the first scene:
           the doors open onto one whole scene instead of half a title and half a scene. */}
       <h2 className={`mono ${s.head}`}>{missionsHead.kicker.split(' / ')[0]} / {missionsHead.title} {missionsHead.em} <span>· {missionsHead.kicker.split(' / ')[1]}</span></h2>
-      <Scene mission={cc} stage={<CommandCenterStage />} />
+      <Scene mission={cc} actor extra={L.cc} stage={<CommandCenterStage />} />
       <DoorZone zone={doorZones.hb} />
-      <Scene mission={hb} overlay={<EcgOverlay />} stage={<HeartBeatStage />} />
-      <Scene mission={ecs} overlay={<ContainerTiles />} stage={<EcsStage />} />
+      <Scene mission={hb} actor extra={L.hb} overlay={<EcgOverlay />} stage={<HeartBeatStage />} />
+      <Scene mission={ecs} actor extra={L.ecs} overlay={<ContainerTiles />} stage={<EcsStage />} />
       <DoorZone zone={doorZones.ocd} />
-      <Scene mission={ocdM} stage={<OcdStage />} />
+      <Scene mission={ocdM} actor extra={L.ocd} stage={<OcdStage />} />
     </section>
   );
 }

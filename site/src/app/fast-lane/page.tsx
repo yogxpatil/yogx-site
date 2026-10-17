@@ -112,6 +112,7 @@ export default function FastLanePage() {
             <p className={`serif ${s.line}`}>{FAST_LANE_LINE}</p>
           </div>
           <Link className={`mono ${s.back}`} href="/" scroll={false}>← Back to the fun version</Link>
+          <p className={`serif ${s.note}`}>{f.footnote}</p>
         </footer>
       </div>
     </div>

@@ -77,7 +77,9 @@ export default function LiquidBlob({ onFail }: { onFail?: () => void }) {
     const g = gl.current, p = driver.paint; if (!g || !p || p.width < 1) return;
     try { g.upload(p); } catch { /* a lost context: nothing to draw on */ }
     if (driver.reduce) { driver.blob.R = 0; delete (driver.blob as { lastT?: number }).lastT; }
-    if (!appStore.get().blobWarm) { try { g.draw({ balls: [], astro: [0, 0, 0], res: [1, 1], time: 0 }); } catch { /* the first frame does it instead */ } appStore.set({ blobWarm: true }); }
+    // the warm-up draws once and clears: it used to draw with no balls at a 1 x 1 size, which painted the whole plane
+    // full screen and left it on the canvas until the first live frame (the orange flash at the intro handoff)
+    if (!appStore.get().blobWarm) { try { g.warm(); } catch { /* the first frame does it instead */ } appStore.set({ blobWarm: true }); }
     loop.current.invalidate();
   }, [driver.paint, driver.paintVersion, driver.reduce, driver.blob]);
 

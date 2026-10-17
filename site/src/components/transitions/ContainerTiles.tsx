@@ -10,9 +10,9 @@ export function ContainerTiles() {
   const last = useRef(-1), reduce = useReducedMotion();
   // frame work is gated on the scene, not on the tiles themselves: they go display:none once flipped
   const scene = useRef<Element | null>(null);
-  useEffect(() => { scene.current = root.current?.parentElement ?? null; }, []);
+  useEffect(() => { scene.current = root.current?.closest('[data-scene]') ?? null; }, []);
   useScrollFrame(() => {
-    const scene = root.current?.parentElement; if (!scene) return;
+    const scene = root.current?.closest('[data-scene]'); if (!scene) return; // the scene article (the tiles sit in its pinned frame)
     const tp = Math.round(tilesProgress(scene.getBoundingClientRect().top, innerHeight) * 1000) / 1000;
     if (tp === last.current) return; // nothing moved since the last frame
     last.current = tp;

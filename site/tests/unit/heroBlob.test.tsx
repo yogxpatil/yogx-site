@@ -15,7 +15,7 @@ import { HeroBlob } from '@/components/hero/HeroBlob';
 import { appStore } from '@/lib/appState';
 import { setTier } from '@/lib/tier';
 
-const fakeGl = () => ({ width: 1, height: 1, resize: vi.fn(), upload: vi.fn(), draw: vi.fn(), dispose: vi.fn() });
+const fakeGl = () => ({ width: 1, height: 1, resize: vi.fn(), upload: vi.fn(), draw: vi.fn(), warm: vi.fn(), dispose: vi.fn() });
 
 beforeEach(() => {
   h.create.mockReset(); h.webgl = true;
@@ -64,5 +64,14 @@ describe('HeroBlob', () => {
   it('dispose never loses the context (StrictMode remounts reuse the same canvas)', async () => {
     const { readFileSync } = await import('node:fs');
     expect(readFileSync('src/components/hero/blobGl.ts', 'utf8')).not.toMatch(/loseContext\(\)/);
+  });
+
+  it('the warm-up before the intro uses warm() (draw then clear), never a frame with no balls at a 1 x 1 size', async () => {
+    const g = fakeGl(); h.create.mockReturnValue(g);
+    render(<HeroBlob />);
+    await act(async () => {});
+    expect(appStore.get().blobWarm).toBe(true);
+    expect(g.warm).toHaveBeenCalledTimes(1);
+    expect(g.draw).not.toHaveBeenCalled(); // not live yet: the loop draws nothing until the intro hands over
   });
 });

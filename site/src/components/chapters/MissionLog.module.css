@@ -1,8 +1,15 @@
-.mlog{padding:16vh 5vw 10vh;position:relative;background:var(--paper)}
+/* z-index above the OCD scene (z 2): the log slides up OVER the tilting scene, never under it */
+.mlog{position:relative;z-index:3;background:var(--paper)}
+/* pinned frame: the content slides inside it (transform only), slower than the page scrolls */
+.pin{position:sticky;top:0;height:100vh;overflow:hidden}
+.content{padding:16vh 5vw 10vh;will-change:transform}
 .head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8vh;transform-origin:50% 100%}
 .head h2{font-weight:900;font-size:clamp(56px,9vw,160px);letter-spacing:-.055em;line-height:.8;text-transform:uppercase}
 .head h2 span{font-family:var(--font-serif),serif;font-style:italic;font-weight:400;text-transform:none;color:var(--rust);letter-spacing:-.02em}
 .list{list-style:none;padding:0}
+/* the scene Robo's box covers the rows; he walks down the node rail with the reading line */
+.track{position:relative}
+.say{font-size:14px;color:var(--ink);border-left:3px solid var(--apricot);padding-left:10px}.say b{color:var(--rust);font-weight:600}
 .mrow{display:grid;grid-template-columns:200px 60px 1fr 260px;align-items:start;padding:34px 0;border-top:1px solid var(--line);opacity:0;transform:translateY(30px);transition:opacity .7s var(--ease),transform .9s var(--ease)}
 .mrow[data-in="true"]{opacity:1;transform:none}
 .yr{font-family:var(--font-serif),serif;font-size:56px;line-height:.9}
@@ -18,4 +25,4 @@
 .amber{border-color:var(--rust);color:var(--rust)}.amber::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--apricot);animation:pulse 2s infinite}
 @keyframes pulse{50%{transform:scale(1.18);box-shadow:0 0 8px 3px #f99e67aa}}
 @media (prefers-reduced-motion: reduce){.mrow{transition:none}.amber::before{animation:none}}
-@media (max-width:760px){.mlog{padding:12vh 6vw}.head{flex-direction:column;align-items:flex-start;gap:14px}.mrow{grid-template-columns:1fr;gap:10px}.node{display:none}.tag{justify-self:start;text-align:left}.yr{font-size:42px}}
+@media (max-width:760px){.content{padding:12vh 6vw}.head{flex-direction:column;align-items:flex-start;gap:14px}.mrow{grid-template-columns:1fr;gap:10px}.node{display:none}.tag{justify-self:start;text-align:left}.yr{font-size:42px}}

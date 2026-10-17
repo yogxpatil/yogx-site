@@ -29,8 +29,8 @@ describe('chapters 5-7 content', () => {
 describe('CommandCenter scene lines', () => {
   it('are the script lines word for word (the bold split comes from the script)', async () => {
     const { roboLines } = await import('@/content/site');
-    const { CC_BACKSTORY } = await import('@/content/robo-script');
-    expect(roboLines.map((l) => l.map((g) => g.t).join(''))).toEqual(CC_BACKSTORY);
-    expect(roboLines[1][0]).toEqual({ t: 'Har galat changelog maine check kiya.', b: true });
+    const { CC_BACKSTORY, CC_OUT_LINE } = await import('@/content/robo-script');
+    expect(roboLines.map((l) => l.map((g) => g.t).join(''))).toEqual([CC_OUT_LINE, ...CC_BACKSTORY]);
+    expect(roboLines[2][0]).toEqual({ t: 'Har galat changelog maine check kiya.', b: true });
   });
 });

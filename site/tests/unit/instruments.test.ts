@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { nextBars, pushFeed, blipPosition, ringOffset } from '@/lib/instruments';
+import { nextBars, pushFeed, blipPosition, ringOffset, rackScale } from '@/lib/instruments';
 
 const seq = (vals: number[]) => { let i = 0; return () => vals[i++ % vals.length]; };
 
@@ -23,4 +23,15 @@ describe('instruments', () => {
   it('ring offset for 40% leaves 60% of the stroke hidden', () => {
     expect(ringOffset(40, 377)).toBeCloseTo(226.2);
   });
+});
+
+describe('rackScale: the instrument rack always ends above the name + headline', () => {
+  const rack = { top: 100, w: 900, h: 170 };
+  it('keeps full size when there is room', () => expect(rackScale(rack, 400, 1600)).toBe(1));
+  it('shrinks so the bottom edge stays 18 px above the name line', () => {
+    const k = rackScale(rack, 260, 1600)!;
+    expect(rack.top + rack.h * k).toBeCloseTo(260 - 18);
+  });
+  it('shrinks to fit the width between the margins', () => expect(rackScale(rack, 400, 720)).toBeCloseTo(0.8));
+  it('steps aside (null) rather than shrink below readable size', () => expect(rackScale(rack, 180, 1600)).toBeNull());
 });

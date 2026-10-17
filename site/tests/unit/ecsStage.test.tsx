@@ -20,28 +20,29 @@ describe('ECS scene', () => {
   beforeEach(() => { flags.active = true; flags.inView = true; h.p = 0; vi.useFakeTimers(); vi.stubGlobal('requestAnimationFrame', vi.fn(() => 1)); vi.stubGlobal('cancelAnimationFrame', vi.fn()); });
   afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 
-  it('12 EC2 boxes pack and relabel ECS as scroll progress advances, and unpack as it rewinds', () => {
+  it('Robo carries the 12 EC2 boxes into their slots, a tower per container, then the label flips; scrolling up un-stacks', () => {
     vi.stubGlobal('matchMedia', media(false));
     const { container } = render(<EcsStage />);
     const box = () => container.querySelector('[data-box]') as HTMLElement, stage = () => container.querySelector('[data-ecs]') as HTMLElement;
-    const k = () => Number(box().style.getPropertyValue('--k'));
+    const inSlot = () => [...container.querySelectorAll<HTMLElement>('[data-box]')].filter((b) => b.dataset.k === '1').length;
+    const mood = () => container.querySelector('[data-actor-bot]')!.getAttribute('data-mood');
     expect(container.querySelectorAll('[data-box]')).toHaveLength(12);
     expect(container.querySelectorAll('[data-ctr]')).toHaveLength(3);
-    expect(box().textContent).toBe('EC2'); expect(k()).toBe(0); expect(stage()).toHaveAttribute('data-packed', 'false');
-    setProgress(0.35); expect(k()).toBeGreaterThan(0); expect(k()).toBeLessThan(1); expect(box().textContent).toBe('EC2');
-    setProgress(0.65); expect(k()).toBe(1); expect(stage()).toHaveAttribute('data-packed', 'true'); expect(box().textContent).toBe('EC2');
-    setProgress(0.8); expect(box().textContent).toBe('ECS'); expect(stage().style.getPropertyValue('--ck')).toBe('1');
-    // back up: relabel, unpack, containers fade out
-    setProgress(0.5); expect(box().textContent).toBe('EC2'); expect(stage()).toHaveAttribute('data-packed', 'false');
-    setProgress(0); expect(k()).toBe(0); expect(stage().style.getPropertyValue('--ck')).toBe('0');
+    expect(box().textContent).toBe('EC2'); expect(inSlot()).toBe(0); expect(stage()).toHaveAttribute('data-packed', 'false');
+    setProgress(0.5); const some = inSlot(); expect(some).toBeGreaterThan(3); expect(some).toBeLessThan(12); expect(box().textContent).toBe('EC2');
+    setProgress(0.78); expect(inSlot()).toBe(12); expect(stage()).toHaveAttribute('data-packed', 'true'); expect(box().textContent).toBe('EC2');
+    setProgress(0.95); expect(box().textContent).toBe('ECS'); expect(stage().style.getPropertyValue('--ck')).toBe('1'); expect(mood()).toBe('wave');
+    // back up: relabel, un-stack, containers fade out
+    setProgress(0.5); expect(box().textContent).toBe('EC2'); expect(inSlot()).toBe(some); expect(stage()).toHaveAttribute('data-packed', 'false');
+    setProgress(0); expect(inSlot()).toBe(0); expect(stage().style.getPropertyValue('--ck')).toBe('0');
   });
   it('holds when progress stops: no timers move the boxes', () => {
     vi.stubGlobal('matchMedia', media(false));
     const { container } = render(<EcsStage />);
     setProgress(0.35);
-    const before = (container.querySelector('[data-box]') as HTMLElement).style.getPropertyValue('--k');
+    const before = (container.querySelector('[data-box]') as HTMLElement).style.transform;
     act(() => { vi.advanceTimersByTime(5000); });
-    expect((container.querySelector('[data-box]') as HTMLElement).style.getPropertyValue('--k')).toBe(before);
+    expect((container.querySelector('[data-box]') as HTMLElement).style.transform).toBe(before);
   });
   it('reduced motion: boxes already packed and labelled ECS, no tiles', () => {
     vi.stubGlobal('matchMedia', media(true));
@@ -71,7 +72,8 @@ describe('ECS stage resize', () => {
     expect(left()).toBe('283px');
     w = 600; act(() => cb());
     expect(left()).toBe('83px');
-    expect(container.querySelector('[data-ecs]')).toHaveAttribute('aria-hidden', 'true');
+    // the boxes are decoration (hidden from screen readers); Robo's lines are announced by his own live region
+    expect(container.querySelector('[data-box]')!.parentElement).toHaveAttribute('aria-hidden', 'true');
     vi.restoreAllMocks(); vi.useRealTimers(); vi.unstubAllGlobals();
   });
 });

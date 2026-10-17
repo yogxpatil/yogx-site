@@ -9,9 +9,13 @@ import { appStore } from '@/lib/appState';
 export type DoorLabel = { sector: string; name: string };
 export type DoorsHandle = { set(pos: number, label: DoorLabel | null, unlocked: boolean): void };
 
+/** The doors only start closing once their zone's top has climbed to this fraction of the viewport: until then the
+ *  previous section's last item stays in view (it has been fully visible for ~70vh of scroll by then), never cut off
+ *  by doors closing over a half-scrolled page. They are fully open again when the zone's bottom reaches the top. */
+export const DOOR_START = 0.3;
 export function zoneValue(top: number, height: number, vh: number) {
   if (!(top < vh && top + height > 0)) return null;
-  const p = clamp((vh - top) / (height + vh));
+  const s = vh * DOOR_START, p = clamp((s - top) / (height + s));
   const c = ez(clamp(p / 0.4)), o = ez(clamp((p - 0.6) / 0.4));
   return { pos: c * (1 - o), unlocked: p > 0.5 };
 }

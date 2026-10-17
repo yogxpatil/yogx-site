@@ -1,6 +1,7 @@
 export const fastLane = {
   name: 'Yogesh Patil',
   role: 'DevOps Engineer',
+  footnote: '*Infra by day, pixels by night. Somebody had to make DevOps look good.',
   place: 'Surat, India',
   intro: [
     'I have spent 3+ years owning production container platforms on Amazon ECS and Kubernetes, across six separate client AWS accounts.',

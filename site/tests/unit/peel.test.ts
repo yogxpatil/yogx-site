@@ -2,9 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { peelState, riseState } from '@/lib/transitions/peel';
 import { waveD } from '@/lib/chapters/wave';
 describe('stack peel (proto lines 989-994)', () => {
-  it('flat while the OCD scene still reaches the screen bottom', () => { expect(peelState(1000, 1000).transform).toBe('none'); });
-  it('tilts back, shrinks and darkens as it lifts away', () => {
-    const s = peelState(500, 1000);
+  it('flat until the OCD scene bottom has climbed to 60% of the screen (its last state stays in view meanwhile)', () => {
+    expect(peelState(1000, 1000).transform).toBe('none'); expect(peelState(600, 1000).transform).toBe('none');
+  });
+  it('tilts back, shrinks and darkens as it lifts away; fully peeled when the log top reaches the screen top', () => {
+    expect(peelState(0, 1000).transform).toBe('perspective(1400px) rotateX(34deg) scale(0.9)');
+    const s = peelState(300, 1000);
     expect(s.transform).toBe('perspective(1400px) rotateX(17deg) scale(0.95)'); expect(s.filter).toBe('brightness(0.825)');
     expect(s.boxShadow).toBe('0 20px 40px -10px rgba(22,19,8,0.275)');
   });

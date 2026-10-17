@@ -11,7 +11,7 @@ describe('ContainerTiles frame work', () => {
     vi.stubGlobal('matchMedia', vi.fn().mockImplementation((q: string) => ({ matches: false, media: q, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
     vi.stubGlobal('innerHeight', 1000);
     let top = 900;
-    const { container } = render(<article><ContainerTiles /></article>);
+    const { container } = render(<article data-scene><ContainerTiles /></article>);
     const art = container.querySelector('article')!; art.getBoundingClientRect = () => ({ top } as DOMRect);
     const root = container.querySelector('[aria-hidden]') as HTMLElement;
     const tile = container.querySelector('[data-tile]') as HTMLElement;

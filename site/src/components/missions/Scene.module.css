@@ -22,5 +22,16 @@
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion: reduce){.spin{animation:none}.sweep{transition:none}}
 @media (max-width:760px){.head{left:6vw;right:6vw;top:calc(9vh - 24px)}.head span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.scene{grid-template-columns:1fr;padding:9vh 6vw;gap:5vh}.stage{min-height:64vh}}
+/* pinned scenes (scene Robo dialogue): extra scroll while the content sticks; overflow:clip (not hidden) keeps sticky working */
+.pin,.cell{display:contents}
+.scene[data-tall]{overflow:clip}
+@media (min-width:761px){
+  .scene[data-tall]{display:block;padding:0;min-height:0;height:calc(100vh + var(--extra))}
+  .scene[data-tall] .pin{display:grid;position:sticky;top:0;height:100vh;box-sizing:border-box;grid-template-columns:minmax(280px,34vw) 1fr;gap:4vw;padding:10vh 5vw}
+}
+@media (max-width:760px){
+  .scene[data-tall] .cell{display:block;min-height:calc(64vh + var(--extra))}
+  .scene[data-tall] .stage{position:sticky;top:14vh}
+}
 /* decorative loops pause while the scene is off screen */
 .scene[data-view="false"] .spin{animation-play-state:paused}

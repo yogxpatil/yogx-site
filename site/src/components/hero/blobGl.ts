@@ -4,11 +4,24 @@ import { vertex, fragment, N_BALLS } from './blobShader';
  *  it replaces three.js + react-three-fiber, which were ~220 KB of gzipped JavaScript to draw these two triangles.
  *  It reproduces what three did for this material: GLSL ES 1.00 shaders, `transparent` blending, a non-premultiplied,
  *  unconverted, mipmapped RGBA texture with flipY off, cleared to transparent before every draw. */
+export type BlobUniforms = { balls: [number, number, number][]; astro: [number, number, number]; res: [number, number]; time: number };
+
+/** True when a frame has a real blob to show: the driver has measured the stage (res is the 1 x 1 placeholder until then)
+ *  and set a radius. Anything else must not reach the shader: with every ball at the origin with radius 0 and res 1 x 1,
+ *  each pixel maps to within 1 px of the balls, the goo mask passes everywhere and the whole Alchemist plane is painted
+ *  over the full screen (the orange flash at the intro handoff). */
+export function drawable(u: Pick<BlobUniforms, 'balls' | 'res'>): boolean {
+  return u.res[0] > 1 && u.res[1] > 1 && u.balls.length > 0 && u.balls[0][2] > 0;
+}
+
 export type BlobGl = {
   /** canvas buffer size for this css size (device pixel ratio clamped to 1..2, like the old Canvas dpr={[1, 2]}) */
   resize(cssW: number, cssH: number): void;
   upload(paint: HTMLCanvasElement): void;
-  draw(u: { balls: [number, number, number][]; astro: [number, number, number]; res: [number, number]; time: number }): void;
+  /** draws one frame; a frame with nothing to show (see `drawable`) just clears to transparent */
+  draw(u: BlobUniforms): void;
+  /** one throw-away draw that compiles and warms the pipeline, then clears: the canvas is left transparent */
+  warm(): void;
   readonly width: number; readonly height: number;
   dispose(): void;
 };
@@ -67,7 +80,10 @@ export function createBlobGl(canvas: HTMLCanvasElement): BlobGl | null {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, paint);
       gl.generateMipmap(gl.TEXTURE_2D);
     },
-    draw({ balls: bs, astro, res, time }) {
+    draw(u) {
+      if (!drawable(u)) { gl.clear(gl.COLOR_BUFFER_BIT); return; }
+      const { balls: bs, astro, res, time } = u;
+      balls.fill(0);
       bs.forEach(([x, y, r], i) => { balls[i * 3] = x; balls[i * 3 + 1] = y; balls[i * 3 + 2] = r; });
       gl.uniform3fv(uBalls, balls);
       gl.uniform3f(uAstro, astro[0], astro[1], astro[2]);
@@ -76,6 +92,17 @@ export function createBlobGl(canvas: HTMLCanvasElement): BlobGl | null {
       gl.uniform1f(uTime, time);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    },
+    warm() {
+      balls.fill(0);
+      gl.uniform3fv(uBalls, balls);
+      gl.uniform3f(uAstro, 0, 0, 0);
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.uniform2f(uBuf, canvas.width, canvas.height);
+      gl.uniform1f(uTime, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      gl.clear(gl.COLOR_BUFFER_BIT); // nothing of the warm-up stays on screen
     },
     dispose() {
       // frees the GPU objects but never loses the context: a remount (StrictMode, next dev) gets the same canvas's
